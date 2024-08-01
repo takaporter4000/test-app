@@ -32,10 +32,14 @@ jobs:
 
     - name: create branches
       run: |
-        all_remote_branches=$(git branch -r --list $SYNC_GIT_REMOTE_NAME/*)
+        echo "doing step 1"
+        all_remote_branches=$(git branch -r --list "$SYNC_GIT_REMOTE_NAME/*")
+        echo "doing step 2"
         tracked_branches=$(git for-each-ref --format='%(upstream:short)' refs/heads/ | grep "^$SYNC_GIT_REMOTE_NAME/")
+        echo "doing step 3"
         tracked_branches_list=$(echo $tracked_branches | tr '\n' ' ')
 
+        echo "doing step 4"
         for remote_branch in $all_remote_branches; do
           local_branch=${remote_branch#$SYNC_GIT_REMOTE_NAME/}
           if [[ ! " $tracked_branches_list " =~ " $remote_branch " ]]; then
