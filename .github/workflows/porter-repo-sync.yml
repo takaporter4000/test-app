@@ -28,8 +28,7 @@ jobs:
       run: git remote add $SYNC_GIT_REMOTE_NAME $SYNC_GIT_REMOTE
 
     - name: fetch all remotes
-      run: |
-        git fetch --all 
+      run: git fetch --all 
 
     - name: create branches
       run: |
@@ -43,7 +42,7 @@ jobs:
             if git show-ref --verify --quiet refs/heads/$local_branch; then
               current_tracking=$(git for-each-ref --format='%(upstream:short)' refs/heads/$local_branch)
               if [[ $current_tracking =~ ^$SYNC_GIT_REMOTE_NAME/ ]]; then
-                echo "Local branch $local_branch already tracks a branch on $SYNC_GIT_REMOTE_NAME. Exiting with error."
+                echo "Error: Local branch $local_branch already tracks a branch on $SYNC_GIT_REMOTE_NAME. Exiting with error."
                 exit 1
               else
                 echo "Local branch $local_branch exists but does not track any branch on $SYNC_GIT_REMOTE_NAME. Updating to track $remote_branch."
@@ -54,12 +53,12 @@ jobs:
               git branch --track $local_branch $remote_branch
             fi
           else
-            echo "Local branch $local_branch is already tracked. Skipping."          
+            echo "Local branch $local_branch is already tracked. Skipping."
+          fi
         done
 
     - name: Get 
-      run: |
-        ./.github/workflows/pull-all-remote-branches.bash
+      run: ./.github/workflows/pull-all-remote-branches.bash
 
     - name: push latest to sync other 
       run: git push --all $SYNC_GIT_REMOTE_NAME
