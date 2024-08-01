@@ -29,7 +29,7 @@ jobs:
 
     - name: fetch all remotes
       run: |
-        git fetch -all 
+        git fetch --all 
 
     - name: create branches
       run: |
