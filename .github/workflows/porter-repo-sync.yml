@@ -40,16 +40,26 @@ jobs:
         for remote_branch in $all_remote_branches; do
           local_branch=${remote_branch#$SYNC_GIT_REMOTE_NAME/}
           if [[ ! " $tracked_branches_list " =~ " $remote_branch " ]]; then
-            git branch --track $local_branch $remote_branch
-          else
-            echo "Local branch $local_branch is already tracked. Skipping."
+            if git show-ref --verify --quiet refs/heads/$local_branch; then
+              current_tracking=$(git for-each-ref --format='%(upstream:short)' refs/heads/$local_branch)
+              if [[ $current_tracking =~ ^$SYNC_GIT_REMOTE_NAME/ ]]; then
+                echo "Local branch $local_branch already tracks a branch on $SYNC_GIT_REMOTE_NAME. Exiting with error."
+                exit 1
+              else
+                echo "Local branch $local_branch exists but does not track any branch on $SYNC_GIT_REMOTE_NAME. Updating to track $remote_branch."
+                git branch --set-upstream-to=$remote_branch $local_branch
+              fi
+            else
+              echo "Creating new local branch $local_branch tracking $remote_branch."
+              git branch --track $local_branch $remote_branch
             fi
+          else
+            echo "Local branch $local_branch is already tracked. Skipping."          
         done
-    
 
     - name: Get 
       run: |
-        ./.github/workflows/pull-all-remote-branches.bash	
+        ./.github/workflows/pull-all-remote-branches.bash
 
     - name: push latest to sync other 
       run: git push --all $SYNC_GIT_REMOTE_NAME
