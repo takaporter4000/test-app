@@ -4,6 +4,8 @@ env:
   SYNC_GIT_REMOTE: git@gitlab.com:taka-ios-team/test-app.git
   SYNC_GIT_REMOTE_NAME: syncserver 
 
+permissions:
+  contents: write
 
 jobs:
   repo-sync:
