@@ -15,20 +15,20 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_SYNC_GIT_PRIVATE_KEY }}
 
     - name: Add Remote Repository
-        run: git remote add $SYNC_GIT_REMOTE_NAME $SYNC_GIT_REMOTE
+      run: git remote add $SYNC_GIT_REMOTE_NAME $SYNC_GIT_REMOTE
 
     - name: Get latest from sync other
-      	run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"
-          git fetch --all 
-          for remote in `git branch -r`; do git branch --track ${remote#$SYNC_GIT_REMOTE_NAME/} $remote; done  
-          ./.github/workflows/pull-all-remote-branches.bash	
+      run: |
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git config --global user.name "github-actions[bot]"
+        git fetch --all 
+        for remote in `git branch -r`; do git branch --track ${remote#$SYNC_GIT_REMOTE_NAME/} $remote; done  
+        ./.github/workflows/pull-all-remote-branches.bash	
 
     - name: push latest to sync other 
-        run: git push --all $SYNC_GIT_REMOTE_NAME
+      run: git push --all $SYNC_GIT_REMOTE_NAME
 
     - name: Push Changes to this Repo
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: git push origin main
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: git push origin main
