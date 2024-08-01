@@ -1,6 +1,6 @@
 #!/bin/bash
 currentbranchref="$(git symbolic-ref HEAD 2>&-)"
-git branch -r | grep -v ' -> ' | while read remotebranch
+git branch -r --list $SYNC_GIT_REMOTE_NAME/* | grep -v ' -> ' | while read remotebranch
 do
     # Split <remote>/<branch> into remote and branchref parts
     remote="${remotebranch%%/*}"
