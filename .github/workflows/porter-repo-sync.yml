@@ -1,5 +1,9 @@
 on:
+  schedule:
+  - cron:  "*/15 * * * *"
   workflow_dispatch:
+  push:
+
 env:
   SYNC_GIT_REMOTE: git@gitlab.com:taka-ios-team/test-app.git
   SYNC_GIT_REMOTE_NAME: syncserver 
