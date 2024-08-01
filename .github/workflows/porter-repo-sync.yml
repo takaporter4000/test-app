@@ -35,7 +35,7 @@ jobs:
         echo "doing step 1"
         all_remote_branches=$(git branch -r --list "$SYNC_GIT_REMOTE_NAME/*")
         echo "doing step 2"
-        tracked_branches=$(git for-each-ref --format='%(upstream:short)' refs/heads/ | grep "^$SYNC_GIT_REMOTE_NAME/")
+        tracked_branches=$(git for-each-ref --format='%(upstream:short)' refs/heads/ | grep "^$SYNC_GIT_REMOTE_NAME/" || true)
         echo "doing step 3"
         tracked_branches_list=$(echo $tracked_branches | tr '\n' ' ')
 
