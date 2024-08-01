@@ -33,8 +33,20 @@ jobs:
 
     - name: create branches
       run: |
-        for remote in `git branch -r`; do git branch --track ${remote#$SYNC_GIT_REMOTE_NAME/} $remote; done  
+        all_remote_branches=$(git branch -r --list $SYNC_GIT_REMOTE_NAME/*)
+        tracked_branches=$(git for-each-ref --format='%(upstream:short)' refs/heads/ | grep "^$SYNC_GIT_REMOTE_NAME/")
+        tracked_branches_list=$(echo $tracked_branches | tr '\n' ' ')
+
+        for remote_branch in $all_remote_branches; do
+          local_branch=${remote_branch#$SYNC_GIT_REMOTE_NAME/}
+          if [[ ! " $tracked_branches_list " =~ " $remote_branch " ]]; then
+            git branch --track $local_branch $remote_branch
+          else
+            echo "Local branch $local_branch is already tracked. Skipping."
+            fi
+        done
     
+
     - name: Get 
       run: |
         ./.github/workflows/pull-all-remote-branches.bash	
