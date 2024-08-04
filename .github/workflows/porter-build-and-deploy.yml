@@ -4,7 +4,7 @@ on:
 
 env:
   # MUST CHANGE:
-  APP_NAME: CV Calender Demo
+  APP_NAME: 'CVCalendar Demo'
     # If you change the App name to one that is not the name of your project be shure to adjust XCODE_BUILD_SCHME
 
   # MAY CHANGE
