@@ -17,7 +17,7 @@ env:
 
 jobs:
   build-and-deploy:
-    runs-on: ${{ env.MACOSX_VERSION }}  
+    runs-on: '${{ env.MACOSX_VERSION }}'
     steps:
     - name: CONFIGURATION
       run: |
@@ -50,7 +50,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1.6.0
       with:
-        xcode-version: ${{ env.XCODE_VERSION }}
+        xcode-version: '${{ env.XCODE_VERSION }}'
 
     - name: Cache DerivedData
       uses: irgaly/xcode-cache@v1
