@@ -4,7 +4,7 @@ on:
 
 env:
   # MUST CHANGE:
-  APP_NAME: CV Calender Demo  
+  APP_NAME: CV Calender Demo
     # If you change the App name to one that is not the name of your project be shure to adjust XCODE_BUILD_SCHME
 
   # MAY CHANGE
@@ -21,7 +21,7 @@ jobs:
     steps:
     - name: CONFIGURATION
       run: |
-        APP_NAME_BUNDLE_ID="${{ env.APP_NAME// / }}"
+        APP_NAME_BUNDLE_ID="${{ env.APP_NAME // / }}"
         # SHOULD CHANGE
         echo "ORG_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
         echo "BUNDLE_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
