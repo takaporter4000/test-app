@@ -14,8 +14,15 @@ env:
   XCODE_BUILD_ARCHIVE_PATH: ./build/${{ env.APP_NAME }}
   # For more configuration options see CONFIGURATION step
 
+
+
 jobs:
-  buil-and-deploy:
+  repo-sync:
+    runs-on: ubuntu-latest
+    steps: 
+
+jobs:
+  build-and-deploy:
     runs-on: '${{ env.MACOSX_VERSION }}'
     steps:
       - name: CONFIGURATION
@@ -56,21 +63,21 @@ jobs:
           key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
           restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
 
-   - name: Build the App
-        run: |
-          xcodebuild \
-          archive \
-          -scheme "${{ env.XCODE_BUILD_SCHME }}" \
-          -sdk ${{ env.XCODE_BUILD_SDK }} \
-          -archivePath ${{ env.XCODE_BUILD_ARCHIVE_PATH }}  \
-          ORG_IDENTIFIER=${{ env.ORG_IDENTIFIER }} \
-          PRODUCT_NAME=${{ env.APP_NAME }} \
-          PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_IDENTIFIER }} \
-          CURRENT_PROJECT_VERSION=${{ env.RELEASE_VERSION }} \
-          MARKETING_VERSION=${{ env.RELEASE_VERSION }} 
-          CODE_SIGNING_REQUIRED=NO \
-          CODE_SIGNING_ALLOWED=NO \
-          CODE_SIGN_IDENTITY="" \
-          AD_HOC_CODE_SIGNING_ALLOWED=YES \
-          | xcpretty && exit ${PIPESTATUS[0]}
-    
+    - name: Build the App
+          run: |
+            xcodebuild \
+            archive \
+            -scheme "${{ env.XCODE_BUILD_SCHME }}" \
+            -sdk ${{ env.XCODE_BUILD_SDK }} \
+            -archivePath ${{ env.XCODE_BUILD_ARCHIVE_PATH }}  \
+            ORG_IDENTIFIER=${{ env.ORG_IDENTIFIER }} \
+            PRODUCT_NAME=${{ env.APP_NAME }} \
+            PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_IDENTIFIER }} \
+            CURRENT_PROJECT_VERSION=${{ env.RELEASE_VERSION }} \
+            MARKETING_VERSION=${{ env.RELEASE_VERSION }} 
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_IDENTITY="" \
+            AD_HOC_CODE_SIGNING_ALLOWED=YES \
+            | xcpretty && exit ${PIPESTATUS[0]}
+      
