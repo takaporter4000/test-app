@@ -14,13 +14,6 @@ env:
   XCODE_BUILD_ARCHIVE_PATH: ./build/${{ env.APP_NAME }}
   # For more configuration options see CONFIGURATION step
 
-
-
-jobs:
-  repo-sync:
-    runs-on: ubuntu-latest
-    steps: 
-
 jobs:
   build-and-deploy:
     runs-on: '${{ env.MACOSX_VERSION }}'
