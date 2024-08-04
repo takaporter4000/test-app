@@ -41,7 +41,7 @@ jobs:
         # DONT CHANGE (Exports Release Version set above fot future steps)
         echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
 
-    - name: Test
+    - name: Test Version name is correct
       run: |
         echo "testing env"
         echo $RELEASE_VERSION
@@ -68,13 +68,13 @@ jobs:
         xcodebuild \
         archive \
         -scheme "${{ env.XCODE_BUILD_SCHME }}" \
-        -sdk ${{ env.XCODE_BUILD_SDK }} \
-        -archivePath ${{ env.XCODE_BUILD_ARCHIVE_PATH }}  \
-        ORG_IDENTIFIER=${{ env.ORG_IDENTIFIER }} \
-        PRODUCT_NAME=${{ env.APP_NAME }} \
-        PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_IDENTIFIER }} \
-        CURRENT_PROJECT_VERSION=${{ env.RELEASE_VERSION }} \
-        MARKETING_VERSION=${{ env.RELEASE_VERSION }} 
+        -sdk "${{ env.XCODE_BUILD_SDK }}" \
+        -archivePath "${{ env.XCODE_BUILD_ARCHIVE_PATH }}"  \
+        ORG_IDENTIFIER="${{ env.ORG_IDENTIFIER }}" \
+        PRODUCT_NAME="${{ env.APP_NAME }}" \
+        PRODUCT_BUNDLE_IDENTIFIER="${{ env.BUNDLE_IDENTIFIER }}" \
+        CURRENT_PROJECT_VERSION="${{ env.RELEASE_VERSION }}" \
+        MARKETING_VERSION="${{ env.RELEASE_VERSION }}" 
         CODE_SIGNING_REQUIRED=NO \
         CODE_SIGNING_ALLOWED=NO \
         CODE_SIGN_IDENTITY="" \
