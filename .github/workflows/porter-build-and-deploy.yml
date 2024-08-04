@@ -17,7 +17,13 @@ env:
 
 jobs:
   build-and-deploy:
-    runs-on: '${{ env.MACOSX_VERSION }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: '${{ env.MACOSX_VERSION }}'
+          
+    runs-on:  ${{ matrix.os }}
     steps:
     - name: CONFIGURATION
       run: |
