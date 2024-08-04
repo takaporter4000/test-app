@@ -18,59 +18,59 @@ jobs:
   build-and-deploy:
     runs-on: '${{ env.MACOSX_VERSION }}'
     steps:
-      - name: CONFIGURATION
-        run: |
-          APP_NAME_BUNDLE_ID="${{ env.APP_NAME// /}}"
-          # SHOULD CHANGE
-          echo "ORG_IDENTIFIER=org${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
-          echo "BUNDLE_IDENTIFIER=org${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
+    - name: CONFIGURATION
+      run: |
+        APP_NAME_BUNDLE_ID="${{ env.APP_NAME// /}}"
+        # SHOULD CHANGE
+        echo "ORG_IDENTIFIER=org${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
+        echo "BUNDLE_IDENTIFIER=org${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
 
-          # MAY CHANGE
-          RELEASE_VERSION=${GITHUB_REF#refs/*/}
-          echo "MARKETING_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
-          ## Build
-          echo "XCODE_BUILD_SCHME=${{ env.APP_NAME }}" >> $GITHUB_ENV
+        # MAY CHANGE
+        RELEASE_VERSION=${GITHUB_REF#refs/*/}
+        echo "MARKETING_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
+        ## Build
+        echo "XCODE_BUILD_SCHME=${{ env.APP_NAME }}" >> $GITHUB_ENV
 
-          # DONT CHANGE (Exports Release Version set above fot future steps)
-          echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
+        # DONT CHANGE (Exports Release Version set above fot future steps)
+        echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
 
-      - name: Test
-        run: |
-          echo "testing env"
-          echo $RELEASE_VERSION
-          echo "testing gitlab expansion"
-          echo ${{ env.RELEASE_VERSION }}
- 
-     - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
+    - name: Test
+      run: |
+        echo "testing env"
+        echo $RELEASE_VERSION
+        echo "testing gitlab expansion"
+        echo ${{ env.RELEASE_VERSION }}
 
-      - name: Setup Xcode
-        uses: maxim-lobanov/setup-xcode@v1.6.0
-        with:
-          xcode-version: '${{ env.XCODE_VERSION }}'
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
 
-      - name: Cache DerivedData
-        uses: irgaly/xcode-cache@v1
-        with:
-          key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
-          restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
+    - name: Setup Xcode
+      uses: maxim-lobanov/setup-xcode@v1.6.0
+      with:
+        xcode-version: '${{ env.XCODE_VERSION }}'
+
+    - name: Cache DerivedData
+      uses: irgaly/xcode-cache@v1
+      with:
+        key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
+        restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
 
     - name: Build the App
-          run: |
-            xcodebuild \
-            archive \
-            -scheme "${{ env.XCODE_BUILD_SCHME }}" \
-            -sdk ${{ env.XCODE_BUILD_SDK }} \
-            -archivePath ${{ env.XCODE_BUILD_ARCHIVE_PATH }}  \
-            ORG_IDENTIFIER=${{ env.ORG_IDENTIFIER }} \
-            PRODUCT_NAME=${{ env.APP_NAME }} \
-            PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_IDENTIFIER }} \
-            CURRENT_PROJECT_VERSION=${{ env.RELEASE_VERSION }} \
-            MARKETING_VERSION=${{ env.RELEASE_VERSION }} 
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            CODE_SIGN_IDENTITY="" \
-            AD_HOC_CODE_SIGNING_ALLOWED=YES \
-            | xcpretty && exit ${PIPESTATUS[0]}
-      
+      run: |
+        xcodebuild \
+        archive \
+        -scheme "${{ env.XCODE_BUILD_SCHME }}" \
+        -sdk ${{ env.XCODE_BUILD_SDK }} \
+        -archivePath ${{ env.XCODE_BUILD_ARCHIVE_PATH }}  \
+        ORG_IDENTIFIER=${{ env.ORG_IDENTIFIER }} \
+        PRODUCT_NAME=${{ env.APP_NAME }} \
+        PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_IDENTIFIER }} \
+        CURRENT_PROJECT_VERSION=${{ env.RELEASE_VERSION }} \
+        MARKETING_VERSION=${{ env.RELEASE_VERSION }} 
+        CODE_SIGNING_REQUIRED=NO \
+        CODE_SIGNING_ALLOWED=NO \
+        CODE_SIGN_IDENTITY="" \
+        AD_HOC_CODE_SIGNING_ALLOWED=YES \
+        | xcpretty && exit ${PIPESTATUS[0]}
+    
