@@ -63,6 +63,16 @@ jobs:
         key: xcode-cache-deriveddata-${{ github.workflow }}-${{ github.sha }}
         restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
 
+
+    - name: pretend xcscheme
+      run: |
+        SYSTEM_USER=$(whoami)
+        echo "The system username of the runner is: $SYSTEM_USER"
+        mv  CVCalendar\ Demo.xcodeproj/xcuserdata/x.xcuserdatad  CVCalendar\ Demo.xcodeproj/xcuserdata/"$SYSTEM_USER".xcuserdatad
+        ls  CVCalendar\ Demo.xcodeproj/xcuserdata/
+    
+
+
     - name: Build the App
       run: |
         xcodebuild \
