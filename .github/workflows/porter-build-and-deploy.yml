@@ -70,26 +70,23 @@ jobs:
         echo "The system username of the runner is: $SYSTEM_USER"
         mv  CVCalendar\ Demo.xcodeproj/xcuserdata/x.xcuserdatad  CVCalendar\ Demo.xcodeproj/xcuserdata/"$SYSTEM_USER".xcuserdatad
         ls  CVCalendar\ Demo.xcodeproj/xcuserdata/
+  #  - name: Build the App
+  #    run: |
+  #      xcodebuild MARKETING_VERSION=3 PRODUCT_BUNDLE_IDENTIFIER=test.ib PRODUCT_NAME="THX TaKa" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO  AD_HOC_CODE_SIGNING_ALLOWED=YES -scheme "CVCalendar Demo" -sdk iphoneos  -archivePath ./build/"THX TaKa" archive
     - name: Build the App
       run: |
-        xcodebuild MARKETING_VERSION=3 PRODUCT_BUNDLE_IDENTIFIER=test.ib PRODUCT_NAME="THX TaKa" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO  AD_HOC_CODE_SIGNING_ALLOWED=YES -scheme "CVCalendar Demo" -sdk iphoneos  -archivePath ./build/"THX TaKa" archive
-
-
-  #- name: Build the App
-   #  run: |
-   #    xcodebuild \
-   #    archive \
-   #    -scheme "${{ env.XCODE_BUILD_SCHME }}" \
-   #    -sdk "${{ env.XCODE_BUILD_SDK }}" \
-   #    -archivePath "${{ env.XCODE_BUILD_ARCHIVE_PATH }}"  \
-   #    ORG_IDENTIFIER="${{ env.ORG_IDENTIFIER }}" \
-   #    PRODUCT_NAME="${{ env.APP_NAME }}" \
-   #    PRODUCT_BUNDLE_IDENTIFIER="${{ env.BUNDLE_IDENTIFIER }}" \
-   #    CURRENT_PROJECT_VERSION="${{ env.RELEASE_VERSION }}" \
-   #    MARKETING_VERSION="${{ env.RELEASE_VERSION }}" 
-   #    CODE_SIGNING_REQUIRED=NO \
-   #    CODE_SIGNING_ALLOWED=NO \
-   #    CODE_SIGN_IDENTITY="" \
-   #    AD_HOC_CODE_SIGNING_ALLOWED=YES \
-   #    | xcpretty && exit ${PIPESTATUS[0]}
-   #
+        xcodebuild \
+        archive \
+        -scheme "${{ env.XCODE_BUILD_SCHME }}" \
+        -sdk "${{ env.XCODE_BUILD_SDK }}" \
+        -archivePath "${{ env.XCODE_BUILD_ARCHIVE_PATH }}"  \
+        ORG_IDENTIFIER="${{ env.ORG_IDENTIFIER }}" \
+        PRODUCT_NAME="${{ env.APP_NAME }}" \
+        PRODUCT_BUNDLE_IDENTIFIER="${{ env.BUNDLE_IDENTIFIER }}" \
+        CURRENT_PROJECT_VERSION="${{ env.RELEASE_VERSION }}" \
+        MARKETING_VERSION="${{ env.RELEASE_VERSION }}" 
+        CODE_SIGNING_REQUIRED=NO \
+        CODE_SIGNING_ALLOWED=NO \
+        CODE_SIGN_IDENTITY="" \
+        AD_HOC_CODE_SIGNING_ALLOWED=YES \
+        | xcpretty && exit ${PIPESTATUS[0]}
