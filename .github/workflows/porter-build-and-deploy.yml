@@ -84,9 +84,31 @@ jobs:
         PRODUCT_NAME="${{ env.APP_NAME }}" \
         PRODUCT_BUNDLE_IDENTIFIER="${{ env.BUNDLE_IDENTIFIER }}" \
         CURRENT_PROJECT_VERSION="${{ env.RELEASE_VERSION }}" \
-        MARKETING_VERSION="${{ env.RELEASE_VERSION }}" 
+        MARKETING_VERSION="${{ env.RELEASE_VERSION }}" \
         CODE_SIGNING_REQUIRED=NO \
         CODE_SIGNING_ALLOWED=NO \
         CODE_SIGN_IDENTITY="" \
         AD_HOC_CODE_SIGNING_ALLOWED=YES \
         | xcpretty && exit ${PIPESTATUS[0]}
+
+
+
+#        xcodebuild \
+#  
+#        -scheme "CVCalendar Demo" \
+#        -sdk "iphoneos" \
+#        -archivePath "${{ env.XCODE_BUILD_ARCHIVE_PATH }}"  \
+#        ORG_IDENTIFIER="${{ env.ORG_IDENTIFIER }}" \
+#        PRODUCT_NAME="${{ env.APP_NAME }}" \
+#        PRODUCT_BUNDLE_IDENTIFIER="${{ env.BUNDLE_IDENTIFIER }}" \
+#        CURRENT_PROJECT_VERSION="${{ env.RELEASE_VERSION }}" \
+#        MARKETING_VERSION="${{ env.RELEASE_VERSION }}" 
+#        CODE_SIGNING_REQUIRED=NO \
+#        CODE_SIGNING_ALLOWED=NO \
+#        CODE_SIGN_IDENTITY="" \
+#        AD_HOC_CODE_SIGNING_ALLOWED=YES \
+#        archive \
+#        | xcpretty && exit ${PIPESTATUS[0]}
+#
+#
+#xcodebuild archive -scheme "CVCalendar Demo" -sdk iphoneos -archivePath "./build/CVCalendar Demo" ORG_IDENTIFIER=org.CVCalendarDemo "PRODUCT_NAME=CVCalendar Demo" PRODUCT_BUNDLE_IDENTIFIER=org.CVCalendarDemo.iphoneos.CVCalendarDemo CURRENT_PROJECT_VERSION=1.0.4 MARKETING_VERSION=1.0.4
