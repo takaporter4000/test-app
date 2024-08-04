@@ -21,7 +21,7 @@ jobs:
     steps:
     - name: CONFIGURATION
       run: |
-        APP_NAME_BUNDLE_ID="${{ env.APP_NAME // / }}"
+        APP_NAME_BUNDLE_ID="${APP_NAME// /}"
         # SHOULD CHANGE
         echo "ORG_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
         echo "BUNDLE_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
