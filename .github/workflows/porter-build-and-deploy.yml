@@ -9,8 +9,8 @@ env:
 
   # MAY CHANGE
   ## Environment
-  MACOSX_VERSION: macos-13 
-  XCODE_VERSION: 14.2 
+  MACOSX_VERSION: 'macos-13' 
+  XCODE_VERSION: '14.2'
   #Build
   XCODE_BUILD_SDK: iphoneos
   # For more configuration options see CONFIGURATION step
