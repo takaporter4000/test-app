@@ -1,9 +1,11 @@
 name: Build and deploy to AltStore
 on:
   workflow_dispatch:
+
 env:
   # MUST CHANGE:
   APP_NAME: CV Calender Demo  
+    # If you change the App name to one that is not the name of your project be shure to adjust XCODE_BUILD_SCHME
 
   # MAY CHANGE
   ## Environment
@@ -11,25 +13,25 @@ env:
   XCODE_VERSION: 14.2 
   #Build
   XCODE_BUILD_SDK: iphoneos
-  XCODE_BUILD_ARCHIVE_PATH: ./build/${{ env.APP_NAME }}
   # For more configuration options see CONFIGURATION step
 
 jobs:
   build-and-deploy:
-    runs-on: '${{ env.MACOSX_VERSION }}'
+    runs-on: ${{ env.MACOSX_VERSION }}  
     steps:
     - name: CONFIGURATION
       run: |
         APP_NAME_BUNDLE_ID="${{ env.APP_NAME// / }}"
         # SHOULD CHANGE
-        echo "ORG_IDENTIFIER=org${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
-        echo "BUNDLE_IDENTIFIER=org${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
+        echo "ORG_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
+        echo "BUNDLE_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
 
         # MAY CHANGE
         RELEASE_VERSION=${GITHUB_REF#refs/*/}
-        echo "MARKETING_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
+        echo "MARKETING_VERSION=${ RELEASE_VERSION }" >> $GITHUB_ENV
         ## Build
         echo "XCODE_BUILD_SCHME=${{ env.APP_NAME }}" >> $GITHUB_ENV
+        echo "XCODE_BUILD_ARCHIVE_PATH=./build/${{ env.APP_NAME }}" >> $GITHUB_ENV
 
         # DONT CHANGE (Exports Release Version set above fot future steps)
         echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
@@ -48,7 +50,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1.6.0
       with:
-        xcode-version: '${{ env.XCODE_VERSION }}'
+        xcode-version: ${{ env.XCODE_VERSION }}
 
     - name: Cache DerivedData
       uses: irgaly/xcode-cache@v1
