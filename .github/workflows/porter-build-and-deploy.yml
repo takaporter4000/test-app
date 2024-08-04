@@ -9,7 +9,6 @@ env:
 
   # MAY CHANGE
   ## Environment
-  MACOSX_VERSION: 'macos-13' 
   XCODE_VERSION: '14.2'
   #Build
   XCODE_BUILD_SDK: iphoneos
@@ -21,9 +20,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: '${{ env.MACOSX_VERSION }}'
+          - MACOSX_VERSION: 'macos-13'
           
-    runs-on:  ${{ matrix.os }}
+    runs-on:  ${{ matrix.MACOSX_VERSION }}
     steps:
     - name: CONFIGURATION
       run: |
