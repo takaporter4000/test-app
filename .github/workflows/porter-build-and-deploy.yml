@@ -11,25 +11,25 @@ env:
   XCODE_VERSION: 14.2 
   #Build
   XCODE_BUILD_SDK: iphoneos
-  XCODE_BUILD_ARCHIVE_PATH: ./build/${{ env.APP_NAME }}
+  XCODE_BUILD_ARCHIVE_PATH: ./build/${{ APP_NAME }}
   # For more configuration options see CONFIGURATION step
 
 jobs:
   build-and-deploy:
-    runs-on: '${{ env.MACOSX_VERSION }}'
+    runs-on: '${{ MACOSX_VERSION }}'
     steps:
     - name: CONFIGURATION
       run: |
-        APP_NAME_BUNDLE_ID="${{ env.APP_NAME// /}}"
+        APP_NAME_BUNDLE_ID="${{ APP_NAME// /}}"
         # SHOULD CHANGE
         echo "ORG_IDENTIFIER=org${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
-        echo "BUNDLE_IDENTIFIER=org${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
+        echo "BUNDLE_IDENTIFIER=org${APP_NAME_BUNDLE_ID}.${{ XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
 
         # MAY CHANGE
         RELEASE_VERSION=${GITHUB_REF#refs/*/}
-        echo "MARKETING_VERSION=${{ env.RELEASE_VERSION }}" >> $GITHUB_ENV
+        echo "MARKETING_VERSION=${{ RELEASE_VERSION }}" >> $GITHUB_ENV
         ## Build
-        echo "XCODE_BUILD_SCHME=${{ env.APP_NAME }}" >> $GITHUB_ENV
+        echo "XCODE_BUILD_SCHME=${{ APP_NAME }}" >> $GITHUB_ENV
 
         # DONT CHANGE (Exports Release Version set above fot future steps)
         echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
@@ -39,7 +39,7 @@ jobs:
         echo "testing env"
         echo $RELEASE_VERSION
         echo "testing gitlab expansion"
-        echo ${{ env.RELEASE_VERSION }}
+        echo ${{ RELEASE_VERSION }}
 
     - uses: actions/checkout@v4
       with:
@@ -48,7 +48,7 @@ jobs:
     - name: Setup Xcode
       uses: maxim-lobanov/setup-xcode@v1.6.0
       with:
-        xcode-version: '${{ env.XCODE_VERSION }}'
+        xcode-version: '${{ XCODE_VERSION }}'
 
     - name: Cache DerivedData
       uses: irgaly/xcode-cache@v1
@@ -60,14 +60,14 @@ jobs:
       run: |
         xcodebuild \
         archive \
-        -scheme "${{ env.XCODE_BUILD_SCHME }}" \
-        -sdk ${{ env.XCODE_BUILD_SDK }} \
-        -archivePath ${{ env.XCODE_BUILD_ARCHIVE_PATH }}  \
-        ORG_IDENTIFIER=${{ env.ORG_IDENTIFIER }} \
-        PRODUCT_NAME=${{ env.APP_NAME }} \
-        PRODUCT_BUNDLE_IDENTIFIER=${{ env.BUNDLE_IDENTIFIER }} \
-        CURRENT_PROJECT_VERSION=${{ env.RELEASE_VERSION }} \
-        MARKETING_VERSION=${{ env.RELEASE_VERSION }} 
+        -scheme "${{ XCODE_BUILD_SCHME }}" \
+        -sdk ${{ XCODE_BUILD_SDK }} \
+        -archivePath ${{ XCODE_BUILD_ARCHIVE_PATH }}  \
+        ORG_IDENTIFIER=${{ ORG_IDENTIFIER }} \
+        PRODUCT_NAME=${{ APP_NAME }} \
+        PRODUCT_BUNDLE_IDENTIFIER=${{ BUNDLE_IDENTIFIER }} \
+        CURRENT_PROJECT_VERSION=${{ RELEASE_VERSION }} \
+        MARKETING_VERSION=${{ RELEASE_VERSION }} 
         CODE_SIGNING_REQUIRED=NO \
         CODE_SIGNING_ALLOWED=NO \
         CODE_SIGN_IDENTITY="" \
