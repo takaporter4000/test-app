@@ -17,7 +17,7 @@ env:
 
 jobs:
   build-and-deploy:
-    runs-on: '${{ env.MACOSX_VERSION }}'
+    runs-on: ${{ env.MACOSX_VERSION }}
     steps:
     - name: CONFIGURATION
       run: |
