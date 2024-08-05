@@ -70,23 +70,6 @@ jobs:
         echo "testing gitlab expansion"
         echo ${{ env.RELEASE_VERSION }}
 
-    - uses: powerdot/telegram-manual-approval@main
-      timeout-minutes: 480
-      with:
-        TELEGRAM_KEY: ${{ secrets.TG_BOT_TOKEN }}
-        TELEGRAM_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        APPROVAL_TEXT: 'HIIIIII'
-
-    - uses: khasanovbi/telegram-manual-approval@v0.0.2
-      id: manual_approval_testig
-      if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
-
-      with:
-        telegram-key: ${{ secrets.TG_BOT_TOKEN }}
-        telegram-chat-id: ${{ secrets.TG_CHAT_ID }}
-        approval-text: 'HI'
-
-
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
@@ -199,14 +182,31 @@ jobs:
 
           **Full Changelog**: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}
 
-    - uses: khasanovbi/telegram-manual-approval@v0.0.2
-      id: manual_approval
-      if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
+    - uses: powerdot/telegram-manual-approval@main
+      timeout-minutes: 480
       with:
-        telegram-key: ${{ secrets.TG_BOT_TOKEN }}
-        telegram-chat-id: ${{ secrets.TG_CHAT_ID }}
-        approval-text: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
+        TELEGRAM_KEY: ${{ secrets.TG_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+        UPDATE_REQUESTS: 28800
+        APPROVAL_TEXT: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
 
+ #   - uses: khasanovbi/telegram-manual-approval@v0.0.2
+ #     id: manual_approval
+ #     if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
+ #     with:
+ #       telegram-key: ${{ secrets.TG_BOT_TOKEN }}
+ #       telegram-chat-id: ${{ secrets.TG_CHAT_ID }}
+ #       approval-text: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
+
+#   - uses: khasanovbi/telegram-manual-approval@v0.0.2
+#     id: manual_approval_testig
+#     if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
+#
+#     with:
+#       telegram-key: ${{ secrets.TG_BOT_TOKEN }}
+#       telegram-chat-id: ${{ secrets.TG_CHAT_ID }}
+#       approval-text: 'HI'
+#
 #   - name: Wait for Release Review
 #     if: ${{ env.REVIEW_BEFORE_RELEASE }}
 #     environment: 'Review Release'
