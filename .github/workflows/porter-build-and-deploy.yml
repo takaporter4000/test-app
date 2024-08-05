@@ -54,6 +54,15 @@ jobs:
       if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
       run: echo " NOT Revieww before release !"
 
+
+    - name: test 3002
+      if: ${{ env.REVIEW_BEFORE_RELEASE != true }}
+      run: echo "Revieww before release !"
+
+    - name: test 4002
+      if: ${{ env.REVIEW_BEFORE_RELEASE == true }}
+      run: echo " NOT Revieww before release !"
+
     - uses: khasanovbi/telegram-manual-approval@v0.0.2
       id: start40000
       if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
