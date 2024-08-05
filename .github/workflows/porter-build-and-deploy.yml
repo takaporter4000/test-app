@@ -165,7 +165,6 @@ jobs:
 
           **Full Changelog**: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}
 
-
     - name: Wait for Release Review
       if: ${{ env.REVIEW_BEFORE_RELEASE }}
       environment: 'Review Release'
