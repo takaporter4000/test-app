@@ -16,7 +16,7 @@ env:
   # MAY CHANGE
  # ADD_ENTITLEMENTS: ${{ false }}
   PRODUCTION_RELEASE: false
-  REVIEW_BEFORE_RELEASE: false # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
+  REVIEW_BEFORE_RELEASE: true # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
 
   ## Environment
   XCODE_VERSION: '14.2'
@@ -64,23 +64,6 @@ jobs:
         echo "XCODE_BUILD_ARCHIVE_PATH=${XCODE_BUILD_ARCHIVE_PATH}" >> $GITHUB_ENV
         echo "BUILD_FOLDER=${BUILD_FOLDER}" >> $GITHUB_ENV
         echo "RESULT_APP_FOLDER=${RESULT_APP_FOLDER}" >> $GITHUB_ENV
-
-
-
-    - name: Add entitlements to signature
-      # if: ${{ env.ADD_ENTITLEMENTS }}
-      continue-on-error: true
-      run: |
-        brew install ldid 
-        echo 'running ldid with: "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"'
-        if [ ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}" ]
-        then
-          echo "worked"
-        else
-          echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldnt be found failed to add signature"
-          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  "${{ env.ENTITLEMENTS_FILE }}" || true
-          echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}" || true
-        fi
 
     - name: Test Version name is correct
       run: |
@@ -137,15 +120,16 @@ jobs:
       continue-on-error: true
       run: |
         brew install ldid 
-        echo "running ldid with: '-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}'"
-        if ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"
-        then 
-          :
-        else 
-          echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldn't be found failed to add signature" 
-          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  ${{ env.ENTITLEMENTS_FILE }} 
-          echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}"
-        fi   
+        echo 'running ldid with: "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"'
+        if [ ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}" ]
+        then
+          echo "worked"
+        else
+          echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldnt be found failed to add signature"
+          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  "${{ env.ENTITLEMENTS_FILE }}" || true
+          echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}" || true
+          false
+        fi
 
     - name: Convert to IPA  
       run: |
