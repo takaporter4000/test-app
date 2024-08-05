@@ -15,8 +15,9 @@ env:
 
   # MAY CHANGE
  # ADD_ENTITLEMENTS: ${{ false }}
-  PRODUCTION_RELEASE: ${{ false }}
-  REVIEW_BEFORE_RELEASE: ${{ false }} # REVIEW_BEFORE_RELEASE: ${{ true }}
+  PRODUCTION_RELEASE: false
+  REVIEW_BEFORE_RELEASE: false  # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
+
   ## Environment
   XCODE_VERSION: '14.2'
   #Build
@@ -153,7 +154,7 @@ jobs:
       run: echo "date=$(date -u +'%Y-%m-%d %c')" >> $GITHUB_OUTPUT
 
     - name: Upload to new stable release and create draft
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       id: upload_and_draft
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -181,6 +182,7 @@ jobs:
           **Full Changelog**: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}
 
     - uses: khasanovbi/telegram-manual-approval@v0.0.2
+      id: manual_approval
       if: ${{ env.REVIEW_BEFORE_RELEASE }}
       with:
         telegram-key: ${{ secrets.TELEGRAM_KEY }}
@@ -195,11 +197,14 @@ jobs:
 #       echo "ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }} 
 #
     - uses: eregon/publish-release@v1
+
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         release_id: ${{ steps.upload_and_draft.outputs.id }}
 
+    - name: The demo step has failed
+      if: ${{ failure() && steps.manual_approval.conclusion == 'failure' }}
 
 
 #        xcodebuild \
