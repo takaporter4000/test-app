@@ -45,6 +45,12 @@ jobs:
       if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
       run: echo " NOT Revieww before release !"
 
+    - uses: khasanovbi/telegram-manual-approval@v0.0.2
+      if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
+      with:
+        telegram-key: ${{ secrets.TELEGRAM_KEY }}
+        telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
+
     - name: CONFIGURATION
       run: |
         APP_NAME_BUNDLE_ID="${APP_NAME// /}"
