@@ -27,6 +27,16 @@ env:
 
 
 jobs:
+  send_message:
+    runs-on: ubuntu-latest
+    steps:
+      - name: send telegram message on push
+      uses: appleboy/telegram-action@master
+      with:
+        to: ${{ secrets.TG_CHAT_ID }}
+        token: ${{ secrets.TG_BOT_TOKEN }}
+        message: |
+          HI
   build-and-deploy:
     strategy:
       fail-fast: false
@@ -71,14 +81,6 @@ jobs:
         echo $RELEASE_VERSION
         echo "testing gitlab expansion"
         echo ${{ env.RELEASE_VERSION }}
-
-    - name: send telegram message on push
-      uses: appleboy/telegram-action@master
-      with:
-        to: ${{ secrets.TG_CHAT_ID }}
-        token: ${{ secrets.TG_BOT_TOKEN }}
-        message: |
-          HI
 
     - uses: khasanovbi/telegram-manual-approval@v0.0.2
       id: manual_approval_testig
