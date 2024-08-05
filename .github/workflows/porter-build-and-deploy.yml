@@ -4,6 +4,7 @@ on:
 permissions:
   contents: write
 
+
 env:
   # MUST CHANGE:
   APP_NAME: 'CVCalendar Demo'
