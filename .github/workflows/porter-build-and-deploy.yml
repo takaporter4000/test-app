@@ -78,7 +78,7 @@ jobs:
           :
         else 
           echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldn't be found failed to add signature" 
-          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  ${{ env.ENTITLEMENTS_FILE }} 
+          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  "${{ env.ENTITLEMENTS_FILE }}" 
           echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}"
         fi   
 
