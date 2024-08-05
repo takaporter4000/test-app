@@ -30,13 +30,14 @@ jobs:
   send_message:
     runs-on: ubuntu-latest
     steps:
-      - name: send telegram message on push
+    - name: send telegram message on push
       uses: appleboy/telegram-action@master
       with:
         to: ${{ secrets.TG_CHAT_ID }}
         token: ${{ secrets.TG_BOT_TOKEN }}
         message: |
           HI
+
   build-and-deploy:
     strategy:
       fail-fast: false
