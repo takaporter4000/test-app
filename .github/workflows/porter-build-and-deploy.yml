@@ -36,6 +36,23 @@ jobs:
           
     runs-on:  ${{ matrix.MACOSX_VERSION }}
     steps:
+    - name: Add entitlements to signature
+      # if: ${{ env.ADD_ENTITLEMENTS }}
+      continue-on-error: true
+      run: |
+        brew install ldid 
+        echo "running ldid with: '-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}'"
+        if ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"
+        then 
+          :
+        else 
+          echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldn't be found failed to add signature" 
+          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  ${{ env.ENTITLEMENTS_FILE }} 
+          echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}"
+        fi   
+
+
+
     - name: CONFIGURATION
       run: |
         APP_NAME_BUNDLE_ID="${APP_NAME// /}"
@@ -125,9 +142,9 @@ jobs:
         then 
           :
         else 
-          echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldn't be found failed to add signature"; 
-          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  ${{ env.ENTITLEMENTS_FILE }}; 
-          echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}" ;
+          echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldn't be found failed to add signature" 
+          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  ${{ env.ENTITLEMENTS_FILE }} 
+          echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}"
         fi   
 
     - name: Convert to IPA  
@@ -187,8 +204,8 @@ jobs:
       id: manual_approval
       if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
       with:
-        telegram-key: ${{ secrets.TELEGRAM_KEY }}
-        telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
+        telegram-key: ${{ secrets.TG_BOT_TOKEN }}
+        telegram-chat-id: ${{ secrets.TG_CHAT_ID }}
         approval-text: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
 
 #   - name: Wait for Release Review
