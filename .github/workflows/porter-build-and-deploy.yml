@@ -16,7 +16,7 @@ env:
   # MAY CHANGE
  # ADD_ENTITLEMENTS: ${{ false }}
   PRODUCTION_RELEASE: ${{ false }}
-  REVIEW_BEFORE_RELEASE: ${{ true }}  # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
+  REVIEW_BEFORE_RELEASE: ${{ false }}  # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
 
   ## Environment
   XCODE_VERSION: '14.2'
