@@ -72,7 +72,7 @@ jobs:
       continue-on-error: true
       run: |
         brew install ldid 
-        echo ' running ldid with: "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"'
+        echo 'running ldid with: "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"'
         if ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"
         then
           echo "worked"
