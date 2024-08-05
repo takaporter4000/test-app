@@ -46,6 +46,7 @@ jobs:
       run: echo " NOT Revieww before release !"
 
     - uses: khasanovbi/telegram-manual-approval@v0.0.2
+      id: start40000
       if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
       with:
         telegram-key: ${{ secrets.TELEGRAM_KEY }}
