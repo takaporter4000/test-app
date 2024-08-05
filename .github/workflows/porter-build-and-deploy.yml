@@ -72,6 +72,15 @@ jobs:
         echo "testing gitlab expansion"
         echo ${{ env.RELEASE_VERSION }}
 
+    - uses: khasanovbi/telegram-manual-approval@v0.0.2
+      id: manual_approval
+      if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
+      with:
+        telegram-key: ${{ secrets.TG_BOT_TOKEN }}
+        telegram-chat-id: ${{ secrets.TG_CHAT_ID }}
+        approval-text: 'HI'
+
+
     - uses: actions/checkout@v4
       with:
         fetch-depth: 0
