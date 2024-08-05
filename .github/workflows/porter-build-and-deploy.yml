@@ -1,6 +1,9 @@
 name: Build and deploy to AltStore
 on:
   workflow_dispatch:
+  push:
+    branch:
+    - "feature-*"
 permissions:
   contents: write
 
@@ -114,7 +117,7 @@ jobs:
     
     - name: Fakesign app
       run: |
-        ldid -S ${{ env.ENTITLEMENTS_FILE }}  ${{ env.RESULT_MACHO_BIN }}
+        ldid -S"${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"
 
     - name: Convert to IPA
       run: |
