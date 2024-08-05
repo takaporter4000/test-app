@@ -149,10 +149,10 @@ jobs:
         files: ${{ env.IPA_PATH }}
         body: |
           ## Changelog
-          ${{steps.build_changelog_on_prs.outputs.changelog}}
+          ${{ steps.build_changelog_on_prs.outputs.changelog }}
 
           ## Changelog based on Commits
-          ${{steps.build_changelog_on_commits.outputs.changelog}}
+          ${{ steps.build_changelog_on_commits.outputs.changelog }}
 
           ## Build Info
           
