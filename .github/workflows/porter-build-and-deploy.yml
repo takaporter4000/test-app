@@ -167,7 +167,7 @@ jobs:
 
 
     - name: Wait for Release Review
-      if: ${{ REVIEW_BEFORE_RELEASE }}
+      if: ${{ env.REVIEW_BEFORE_RELEASE }}
       environment: 'Review Release'
       run: |
         echo "ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }} 
