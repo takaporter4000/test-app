@@ -14,12 +14,14 @@ env:
     # If you change the App name to one that is not the name of your project be shure to adjust XCODE_NAME
 
   # MAY CHANGE
+ # ADD_ENTITLEMENTS: ${{ false }}
   PRODUCTION_RELEASE: ${{ false }}
   REVIEW_BEFORE_RELEASE: ${{ false }} # REVIEW_BEFORE_RELEASE: ${{ true }}
   ## Environment
   XCODE_VERSION: '14.2'
   #Build
   XCODE_BUILD_SDK: iphoneos
+
   # For more configuration options see CONFIGURATION step
 
 
@@ -111,14 +113,19 @@ jobs:
         CODE_SIGN_IDENTITY="" \
         AD_HOC_CODE_SIGNING_ALLOWED=YES \
         | xcpretty && exit ${PIPESTATUS[0]}
-
-    - name: Install ldid for signing # NOT SHURE IF THIS IS EVEN NECESARRY 
-      run: brew install ldid 
     
-    - name: Fakesign app
+    - name: Add entitlements to signature
+      # if: ${{ env.ADD_ENTITLEMENTS }}
+      continue-on-error: true
       run: |
+        brew install ldid 
         echo "running ldid with: '-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}'"
-        ldid -S${{ env.ENTITLEMENTS_FILE }}  {{ env.RESULT_MACHO_BIN }}
+        if ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}" ; then :;\
+        else \
+        echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldn't be found"; \
+        echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  ${{ env.ENTITLEMENTS_FILE }}; \
+        echo "check  ${{ env.RESULT_MACHO_BIN }}";ls "${{ env.RESULT_MACHO_BIN }}" ;\
+        fi   
 
     - name: Convert to IPA
       run: |
