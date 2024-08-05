@@ -73,7 +73,7 @@ jobs:
         echo ${{ env.RELEASE_VERSION }}
 
     - uses: khasanovbi/telegram-manual-approval@v0.0.2
-      id: manual_approval
+      id: manual_approval_testig
       if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
       with:
         telegram-key: ${{ secrets.TG_BOT_TOKEN }}
