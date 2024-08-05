@@ -136,6 +136,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+    - name: Get current date
+      id: date
+      run: echo "date=$(date -u +'%Y-%m-%d %c')" >> $GITHUB_OUTPUT
+
     - name: Upload to new stable release and create draft
       uses: softprops/action-gh-release@v1
       id: upload_and_draft
@@ -157,7 +161,6 @@ jobs:
           ## Build Info
           
           Built at (UTC): `${{ steps.date.outputs.date }}`
-          Built at (UTC date): `${{ steps.date_altstore.outputs.date }}`
           Commit SHA: `${{ github.sha }}`
           Version: `${{ env.RELEASE_VERSION }}`
           Github action run:  `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }`
@@ -165,12 +168,20 @@ jobs:
 
           **Full Changelog**: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}
 
-    - name: Wait for Release Review
+    - uses: khasanovbi/telegram-manual-approval@v0.0.2
       if: ${{ env.REVIEW_BEFORE_RELEASE }}
-      environment: 'Review Release'
-      run: |
-        echo "ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }} 
+      with:
+        telegram-key: ${{ secrets.TELEGRAM_KEY }}
+        telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
+        approval-text: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
 
+
+#   - name: Wait for Release Review
+#     if: ${{ env.REVIEW_BEFORE_RELEASE }}
+#     environment: 'Review Release'
+#     run: |
+#       echo "ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }} 
+#
     - uses: eregon/publish-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
