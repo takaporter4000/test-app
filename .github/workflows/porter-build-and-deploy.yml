@@ -15,8 +15,8 @@ env:
 
   # MAY CHANGE
  # ADD_ENTITLEMENTS: ${{ false }}
-  PRODUCTION_RELEASE: ${{ false }}
-  REVIEW_BEFORE_RELEASE: ${{ false }} # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
+  PRODUCTION_RELEASE: false
+  REVIEW_BEFORE_RELEASE: false # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
 
   ## Environment
   XCODE_VERSION: '14.2'
@@ -36,40 +36,6 @@ jobs:
           
     runs-on:  ${{ matrix.MACOSX_VERSION }}
     steps:
-
-    - name: test 300
-      if: ${{ env.REVIEW_BEFORE_RELEASE }}
-      run: echo "Revieww before release !"
-
-    - name: test 4000
-      if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
-      run: echo " NOT Revieww before release !"
-
-
-    - name: test 3001
-      if: ${{ env.REVIEW_BEFORE_RELEASE != 'true' }}
-      run: echo "Revieww before release !"
-
-    - name: test 4001
-      if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
-      run: echo " NOT Revieww before release !"
-
-
-    - name: test 3002
-      if: ${{ env.REVIEW_BEFORE_RELEASE != true }}
-      run: echo "Revieww before release !"
-
-    - name: test 4002
-      if: ${{ env.REVIEW_BEFORE_RELEASE == true }}
-      run: echo " NOT Revieww before release !"
-
-    - uses: khasanovbi/telegram-manual-approval@v0.0.2
-      id: start40000
-      if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
-      with:
-        telegram-key: ${{ secrets.TELEGRAM_KEY }}
-        telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
-
     - name: CONFIGURATION
       run: |
         APP_NAME_BUNDLE_ID="${APP_NAME// /}"
@@ -195,8 +161,8 @@ jobs:
         name: ${{ env.RELEASE_VERSION }}
         tag_name: ${{ env.RELEASE_VERSION }}
         draft: true
-        make_latest: ${{ env.PRODUCTION_RELEASE }}
-        prerelease: ${{ ! env.PRODUCTION_RELEASE }}
+        make_latest: ${{ env.PRODUCTION_RELEASE == 'true' }}
+        prerelease: ${{ env.PRODUCTION_RELEASE != 'true' }}
         files: ${{ env.IPA_PATH }}
         body: |
           ## Changelog
@@ -217,7 +183,7 @@ jobs:
 
     - uses: khasanovbi/telegram-manual-approval@v0.0.2
       id: manual_approval
-      if: ${{ env.REVIEW_BEFORE_RELEASE }}
+      if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
       with:
         telegram-key: ${{ secrets.TELEGRAM_KEY }}
         telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
@@ -230,7 +196,6 @@ jobs:
 #       echo "ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }} 
 #
     - uses: eregon/publish-release@v1
-
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
