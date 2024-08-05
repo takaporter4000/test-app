@@ -212,8 +212,7 @@ jobs:
       with:
         telegram-key: ${{ secrets.TELEGRAM_KEY }}
         telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
-        approval-text: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.  .outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
-
+        approval-text: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
 
 #   - name: Wait for Release Review
 #     if: ${{ env.REVIEW_BEFORE_RELEASE }}
