@@ -1,18 +1,23 @@
 name: Build and deploy to AltStore
 on:
   workflow_dispatch:
+permissions:
+  contents: write
 
 env:
   # MUST CHANGE:
   APP_NAME: 'CVCalendar Demo'
-    # If you change the App name to one that is not the name of your project be shure to adjust XCODE_BUILD_SCHME
+    # If you change the App name to one that is not the name of your project be shure to adjust XCODE_NAME
 
   # MAY CHANGE
+  PRODUCTION_RELEASE: ${{ false }}
+  REVIEW_BEFORE_RELEASE: ${{ false }} # REVIEW_BEFORE_RELEASE: ${{ true }}
   ## Environment
   XCODE_VERSION: '14.2'
   #Build
   XCODE_BUILD_SDK: iphoneos
   # For more configuration options see CONFIGURATION step
+
 
 jobs:
   build-and-deploy:
@@ -32,14 +37,26 @@ jobs:
         echo "BUNDLE_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
 
         # MAY CHANGE
-        RELEASE_VERSION=${GITHUB_REF#refs/*/}
+        RELEASE_VERSION=${GITHUB_REF#refs/*/}; 
         echo "MARKETING_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
         ## Build
-        echo "XCODE_BUILD_SCHME=${{ env.APP_NAME }}" >> $GITHUB_ENV
-        echo "XCODE_BUILD_ARCHIVE_PATH=./build/${{ env.APP_NAME }}" >> $GITHUB_ENV
+        XCODE_NAME="${{ env.APP_NAME }}"
 
-        # DONT CHANGE (Exports Release Version set above fot future steps)
+        
+        # SHOULDNT CHANGE
+        BUILD_FOLDER="./build"
+        XCODE_BUILD_ARCHIVE_PATH="${BUILD_FOLDER}/${{ env.APP_NAME }}.xcarchive"
+        echo "XCODE_BUILD_SCHME=${XCODE_NAME}" >> $GITHUB_ENV
+        echo "ENTITLEMENTS_FILE=${XCODE_NAME}/${XCODE_NAME// /_}.entitlements" >> $GITHUB_ENV
+        RESULT_APP_FOLDER="${XCODE_BUILD_ARCHIVE_PATH}/Products/Applications/${{ env.APP_NAME }}.app"
+        echo "RESULT_MACHO_BIN=${RESULT_APP_FOLDER}/${{ env.APP_NAME }}" >> $GITHUB_ENV
+
+        # DONT CHANGE (Exports ENV set above fot future steps)
         echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
+        echo "XCODE_NAME=${XCODE_NAME}" >> $GITHUB_ENV
+        echo "XCODE_BUILD_ARCHIVE_PATH=${XCODE_BUILD_ARCHIVE_PATH}" >> $GITHUB_ENV
+        echo "BUILD_FOLDER=${BUILD_FOLDER}" >> $GITHUB_ENV
+        echo "RESULT_APP_FOLDER=${RESULT_APP_FOLDER}" >> $GITHUB_ENV
 
     - name: Test Version name is correct
       run: |
@@ -90,6 +107,76 @@ jobs:
         CODE_SIGN_IDENTITY="" \
         AD_HOC_CODE_SIGNING_ALLOWED=YES \
         | xcpretty && exit ${PIPESTATUS[0]}
+
+    - name: Install ldid for signing # NOT SHURE IF THIS IS EVEN NECESARRY 
+      run: brew install ldid 
+    
+    - name: Fakesign app
+      run: |
+        ldid -S ${{ env.ENTITLEMENTS_FILE }}  ${{ env.RESULT_MACHO_BIN }}
+
+    - name: Convert to IPA
+      run: |
+        mkdir "${{ env.BUILD_FOLDER }}/Payload"
+        cp -pR "${{ env.RESULT_APP_FOLDER }}" "${{ env.BUILD_FOLDER }}/Payload/"
+        IPA_PATH="${{ env.BUILD_FOLDER }}/${{ env.APP_NAME }}.ipa"
+        echo "IPA_PATH=${IPA_PATH}" >> $GITHUB_ENV
+        zip -r ${IPA_PATH} ${{ env.BUILD_FOLDER }}/Payload"
+
+
+    - name: Build Changelog on PRs 
+      uses: mikepenz/release-changelog-builder-action@v5
+      id: build_changelog_on_prs
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build Changelog on commits 
+      uses: mikepenz/release-changelog-builder-action@v5
+      id: build_changelog_on_commits
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Upload to new stable release and create draft
+      uses: softprops/action-gh-release@v1
+      id: upload_and_draft
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        name: ${{ env.RELEASE_VERSION }}
+        tag_name: ${{ env.RELEASE_VERSION }}
+        draft: true
+        make_latest: ${{ env.PRODUCTION_RELEASE }}
+        prerelease: ${{ !env.PRODUCTION_RELEASE }}
+        files: ${{ env.IPA_PATH }}
+        body: |
+          ## Changelog
+          ${{steps.build_changelog_on_prs.outputs.changelog}}
+
+          ## Changelog based on Commits
+          ${{steps.build_changelog_on_commits.outputs.changelog}}
+
+          ## Build Info
+          
+          Built at (UTC): `${{ steps.date.outputs.date }}`
+          Built at (UTC date): `${{ steps.date_altstore.outputs.date }}`
+          Commit SHA: `${{ github.sha }}`
+          Version: `${{ env.RELEASE_VERSION }}`
+          Github action run:  `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }`
+          256 HASH: `${{ hashFiles(env.IPA_PATH) }}`
+
+          **Full Changelog**: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}
+
+
+    - name: Wait for Release Review
+      if: ${{ REVIEW_BEFORE_RELEASE }}
+      environment: 'Review Release'
+      run: |
+        echo "ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }} 
+
+    - uses: eregon/publish-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        release_id: ${{ steps.upload_and_draft.outputs.id }}
 
 
 
