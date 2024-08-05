@@ -121,20 +121,22 @@ jobs:
       run: |
         brew install ldid 
         echo "running ldid with: '-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}'"
-        if ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}" ; then :;\
-        else \
-        echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldn't be found failed to add signature"; \
-        echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  ${{ env.ENTITLEMENTS_FILE }}; \
-        echo "check  ${{ env.RESULT_MACHO_BIN }}";ls "${{ env.RESULT_MACHO_BIN }}" ;\
+        if ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"
+        then 
+          :
+        else 
+          echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldn't be found failed to add signature"; 
+          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  ${{ env.ENTITLEMENTS_FILE }}; 
+          echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}" ;
         fi   
 
-    - name: Convert to IPA
+    - name: Convert to IPA  
       run: |
         mkdir "${{ env.BUILD_FOLDER }}/Payload"
         cp -pR "${{ env.RESULT_APP_FOLDER }}" "${{ env.BUILD_FOLDER }}/Payload/"
         IPA_PATH="${{ env.BUILD_FOLDER }}/${{ env.APP_NAME }}.ipa"
         echo "IPA_PATH=${IPA_PATH}" >> $GITHUB_ENV
-        zip -r ${IPA_PATH} "${{ env.BUILD_FOLDER }}/Payload"
+        zip -r "${IPA_PATH}" "${{ env.BUILD_FOLDER }}/Payload"
 
 
     - name: Build Changelog on PRs 
