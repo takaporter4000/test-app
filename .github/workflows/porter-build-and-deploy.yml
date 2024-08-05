@@ -163,8 +163,8 @@ jobs:
           Built at (UTC): `${{ steps.date.outputs.date }}`
           Commit SHA: `${{ github.sha }}`
           Version: `${{ env.RELEASE_VERSION }}`
-          Github action run:  `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }`
-          256 HASH: `${{ hashFiles(env.IPA_PATH) }}`
+          Github action run:  `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+          SHA256 hash: `${{ hashFiles(env.IPA_PATH) }}`
 
           **Full Changelog**: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}
 
