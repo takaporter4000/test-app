@@ -117,7 +117,7 @@ jobs:
     
     - name: Fakesign app
       run: |
-        ldid -S"${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"
+        ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"
 
     - name: Convert to IPA
       run: |
