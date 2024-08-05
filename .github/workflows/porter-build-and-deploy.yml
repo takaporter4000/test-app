@@ -203,8 +203,8 @@ jobs:
       with:
         release_id: ${{ steps.upload_and_draft.outputs.id }}
 
-    - name: The demo step has failed
-      if: ${{ failure() && steps.manual_approval.conclusion == 'failure' }}
+#    - name: The demo step has failed
+ #     if: ${{ failure() && steps.manual_approval.conclusion == 'failure' }}
 
 
 #        xcodebuild \
