@@ -45,6 +45,15 @@ jobs:
       if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
       run: echo " NOT Revieww before release !"
 
+
+    - name: test 3001
+      if: ${{ env.REVIEW_BEFORE_RELEASE != 'true' }}
+      run: echo "Revieww before release !"
+
+    - name: test 4001
+      if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
+      run: echo " NOT Revieww before release !"
+
     - uses: khasanovbi/telegram-manual-approval@v0.0.2
       id: start40000
       if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
@@ -203,7 +212,7 @@ jobs:
       with:
         telegram-key: ${{ secrets.TELEGRAM_KEY }}
         telegram-chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
-        approval-text: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
+        approval-text: 'ready for release, checkout the draft at: ${{ steps.upload_and_draft.outputs.url }} and the diff under: ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.  .outputs.fromTag }}...${{ env.RELEASE_VERSION }}'
 
 
 #   - name: Wait for Release Review
