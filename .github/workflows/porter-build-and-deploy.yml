@@ -15,17 +15,14 @@ env:
 
   # MAY CHANGE
  # ADD_ENTITLEMENTS: ${{ false }}
-  PRODUCTION_RELEASE: false
+  PRODUCTION_RELEASE: false # Release as latest or pre-release
   REVIEW_BEFORE_RELEASE: true # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
 
   ## Environment
   XCODE_VERSION: '14.2'
   #Build
   XCODE_BUILD_SDK: iphoneos
-
   # For more configuration options see CONFIGURATION step
-
-
 
 jobs:
   build-and-deploy:
@@ -72,7 +69,6 @@ jobs:
         echo $RELEASE_VERSION
         echo "testing gitlab expansion"
         echo ${{ env.RELEASE_VERSION }}
-
 
     - uses: powerdot/telegram-manual-approval@main
       with:
