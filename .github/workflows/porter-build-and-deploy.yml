@@ -15,8 +15,8 @@ env:
 
   # MAY CHANGE
  # ADD_ENTITLEMENTS: ${{ false }}
-  PRODUCTION_RELEASE: false
-  REVIEW_BEFORE_RELEASE: false  # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
+  PRODUCTION_RELEASE: ${{ false }}
+  REVIEW_BEFORE_RELEASE: ${{ true }}  # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
 
   ## Environment
   XCODE_VERSION: '14.2'
@@ -36,6 +36,15 @@ jobs:
           
     runs-on:  ${{ matrix.MACOSX_VERSION }}
     steps:
+
+    - name: test 300
+      if: ${{ env.REVIEW_BEFORE_RELEASE }}
+      run: echo "Revieww before release !"
+
+    - name: test 4000
+      if: ${{ ! env.REVIEW_BEFORE_RELEASE }}
+      run: echo " NOT Revieww before release !"
+
     - name: CONFIGURATION
       run: |
         APP_NAME_BUNDLE_ID="${APP_NAME// /}"
@@ -162,7 +171,7 @@ jobs:
         tag_name: ${{ env.RELEASE_VERSION }}
         draft: true
         make_latest: ${{ env.PRODUCTION_RELEASE }}
-        prerelease: ${{ !env.PRODUCTION_RELEASE }}
+        prerelease: ${{ ! env.PRODUCTION_RELEASE }}
         files: ${{ env.IPA_PATH }}
         body: |
           ## Changelog
