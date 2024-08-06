@@ -163,21 +163,21 @@ jobs:
 
     - name: Compile Changelog-Prependix and full link
       run: | 
-        CHANGELOG_PREPEND=$(cat <<EOFXXXXXXXXXXXX
+        CHANGELOG_PREPEND="$(cat <<EOFXXXXXXXXXXXX
         ## Changelog based on PRs 
         ${{ steps.build_changelog_on_prs.outputs.changelog }}
 
         ## Changelog based on Commits
         ${{ steps.build_changelog_on_commits.outputs.changelog }}
         EOFXXXXXXXXXXXX
-        )
+        )"
         echo "your Changelog-Prependix is ${CHANGELOG_PREPEND}"
         echo "CHANGELOG_PREPEND=${CHANGELOG_PREPEND}" >> $GITHUB_ENV
 
-        FULL_CHANGELOG_LINK=$(cat <<EOFXXXXXXXXXXXX
+        FULL_CHANGELOG_LINK="$(cat <<EOFXXXXXXXXXXXX
         ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}
         EOFXXXXXXXXXXXX
-        )
+        )"
         echo "your full link is ${FULL_CHANGELOG_LINK}"
         echo "FULL_CHANGELOG_LINK=${FULL_CHANGELOG_LINK}" >> $GITHUB_ENV
     
