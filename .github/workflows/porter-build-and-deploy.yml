@@ -266,7 +266,7 @@ jobs:
           ready for release checkout the 
           Release draft at: ${{ steps.upload_and_draft.outputs.url }} 
 
-          new Changelog at:  ${{ LINKNODE_URL }}'
+          new Changelog at:  ${{ env.LINKNODE_URL }}'
 
           diff under: ${{ env.FULL_CHANGELOG_LINK }}
 
