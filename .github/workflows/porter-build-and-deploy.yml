@@ -183,7 +183,7 @@ jobs:
     
     - name: Compile Release Notes
       run: | 
-        RELEASE_NOTES=ARGUMENTS=$(cat <<EOFXXXXXXXXXXXX
+        RELEASE_NOTES=$(cat <<EOFXXXXXXXXXXXX
         ${CHANGELOG_PREPEND}
 
         ## Build Info
