@@ -138,10 +138,9 @@ jobs:
       run: |
         mkdir "${{ env.BUILD_FOLDER }}/Payload"
         cp -pR "${{ env.RESULT_APP_FOLDER }}" "${{ env.BUILD_FOLDER }}/Payload/"
-        IPA_PATH="${{ env.BUILD_FOLDER }}/${env.APP_NAME// /-}.ipa"
+        IPA_PATH="${{ env.BUILD_FOLDER }}/${APP_NAME// /-}.ipa"
         echo "IPA_PATH=${IPA_PATH}" >> $GITHUB_ENV
-        cd ${{ env.BUILD_FOLDER }}
-        zip -r "${IPA_PATH}" "Payload"
+        (cd ${{ env.BUILD_FOLDER }} && zip -r  -  "Payload") > "${IPA_PATH}"
 
 
     - name: Build Changelog on PRs 
