@@ -197,7 +197,7 @@ jobs:
         EOFXXXXXXXXXXXX
         )
 
-        echo "your Release notes are ${RELEASE_NOTES}
+        echo "your Release notes are ${RELEASE_NOTES}"
         echo "RELEASE_NOTES=${RELEASE_NOTES}" >> $GITHUB_ENV
 
 
