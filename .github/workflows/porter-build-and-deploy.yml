@@ -172,7 +172,9 @@ jobs:
         EOFXXXXXXXXXXXX
         )"
         echo "your Changelog-Prependix is ${CHANGELOG_PREPEND}"
-        echo "CHANGELOG_PREPEND=${CHANGELOG_PREPEND}" >> $GITHUB_ENV
+        #echo "CHANGELOG_PREPEND=${CHANGELOG_PREPEND}" >> $GITHUB_ENV
+        echo "CHANGELOG_PREPEND<<EOF" >> $GITHUB_ENV;echo "$CHANGELOG_PREPEND" >> $GITHUB_ENV echo "EOF" >> $GITHUB_ENV
+
 
         FULL_CHANGELOG_LINK="$(cat <<EOFXXXXXXXXXXXX
         ${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}
@@ -180,6 +182,7 @@ jobs:
         )"
         echo "your full link is ${FULL_CHANGELOG_LINK}"
         echo "FULL_CHANGELOG_LINK=${FULL_CHANGELOG_LINK}" >> $GITHUB_ENV
+        echo "step finished"
     
     - name: Compile Release Notes
       run: | 
@@ -198,7 +201,9 @@ jobs:
         )
 
         echo "your Release notes are ${RELEASE_NOTES}"
-        echo "RELEASE_NOTES=${RELEASE_NOTES}" >> $GITHUB_ENV
+        #echo "RELEASE_NOTES=${RELEASE_NOTES}" >> $GITHUB_ENV
+        echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV;echo "$RELEASE_NOTES" >> $GITHUB_ENV echo "EOF" >> $GITHUB_ENV
+
 
 
     - name: Upload to new stable release and create draft
@@ -234,7 +239,8 @@ jobs:
           }
           { print }
         ')
-        echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
+        #echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
+        echo "NEW_CHANGELOG_FILE<<EOF" >> $GITHUB_ENV;echo "$NEW_CHANGELOG_FILE" >> $GITHUB_ENV echo "EOF" >> $GITHUB_ENV
     
     - name: upload new Changelog File to linkode
       if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' && env.CHANGELOG_FILE != 'false' }}
@@ -288,7 +294,8 @@ jobs:
                                   https://linkode.org/api/1/linkodes/cuk7ahCKdXqWURS2KwiAI1 \
                                   | jq --raw-output '.content')
 
-        echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
+        #echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
+        echo "NEW_CHANGELOG_FILE<<EOF" >> $GITHUB_ENV;echo "$NEW_CHANGELOG_FILE" >> $GITHUB_ENV echo "EOF" >> $GITHUB_ENV
 
     - uses: eregon/publish-release@v1
       env:
