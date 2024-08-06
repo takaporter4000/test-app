@@ -163,7 +163,7 @@ jobs:
 
     - name: Compile Changelog-Prependix and full link
       run: | 
-        CHANGELOG_PREPEND=ARGUMENTS=$(cat <<EOFXXXXXXXXXXXX
+        CHANGELOG_PREPEND=$(cat <<EOFXXXXXXXXXXXX
         ## Changelog based on PRs 
         ${{ steps.build_changelog_on_prs.outputs.changelog }}
 
