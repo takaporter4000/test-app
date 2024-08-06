@@ -171,7 +171,7 @@ jobs:
         ${{ steps.build_changelog_on_commits.outputs.changelog }}
         EOFXXXXXXXXXXXX
         )
-        echo "your Changelog-Prependix is ${CHANGELOG_PREPEND}
+        echo "your Changelog-Prependix is ${CHANGELOG_PREPEND}"
         echo "CHANGELOG_PREPEND=${CHANGELOG_PREPEND}" >> $GITHUB_ENV
 
         FULL_CHANGELOG_LINK=$(cat <<EOFXXXXXXXXXXXX
