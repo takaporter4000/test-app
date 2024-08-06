@@ -163,7 +163,6 @@ jobs:
       run: echo "date=$(date -u +'%Y-%m-%d %c')" >> $GITHUB_OUTPUT    
 
     - name: Compile Changelog-Prependix and full link
-      id: date
       run: | 
         CHANGELOG_PREPEND=ARGUMENTS=$(cat <<EOFXXXXXXXXXXXX
         ## Changelog based on PRs 
@@ -184,7 +183,6 @@ jobs:
         echo "FULL_CHANGELOG_LINK=${FULL_CHANGELOG_LINK}" >> $GITHUB_ENV
     
     - name: Compile Release Notes
-      id: date
       run: | 
         RELEASE_NOTES=ARGUMENTS=$(cat <<EOFXXXXXXXXXXXX
         ${CHANGELOG_PREPEND}
