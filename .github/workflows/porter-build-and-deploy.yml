@@ -263,15 +263,15 @@ jobs:
         TELEGRAM_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         UPDATE_REQUESTS: 28800
         APPROVAL_TEXT: |
-        ready for release checkout the 
-        Release draft at: ${{ steps.upload_and_draft.outputs.url }} 
+          ready for release checkout the 
+          Release draft at: ${{ steps.upload_and_draft.outputs.url }} 
 
-        new Changelog at:  ${{ LINKNODE_URL }}'
+          new Changelog at:  ${{ LINKNODE_URL }}'
 
-        diff under: ${{ env.FULL_CHANGELOG_LINK }}
+          diff under: ${{ env.FULL_CHANGELOG_LINK }}
 
-        Hit Approve to publish those changes
-        Except for the diff you may change those files online ans hit save on the corrosponding site to make changes
+          Hit Approve to publish those changes
+          Except for the diff you may change those files online ans hit save on the corrosponding site to make changes
 
     - name: Download  Changelog File from linkode
       if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' && env.CHANGELOG_FILE != 'false' }}
