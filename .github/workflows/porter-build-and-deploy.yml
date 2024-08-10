@@ -6,6 +6,9 @@ on:
     - "feature-*"
 permissions:
   contents: write
+  pages: write
+  id-token: write
+
 
 
 env:
@@ -14,10 +17,11 @@ env:
     # If you change the App name to one that is not the name of your project be shure to adjust XCODE_NAME
 
   # MAY CHANGE
- # ADD_ENTITLEMENTS: ${{ false }}
-  PRODUCTION_RELEASE: false # Release as latest or pre-release
-  REVIEW_BEFORE_RELEASE: true # REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
+  # ADD_ENTITLEMENTS: ${{ false }}
+  PRODUCTION_RELEASE: false # Release as latest or pre-release (false=pre-releas, true=latest label)
+  REVIEW_BEFORE_RELEASE: true # Send a telegram Message requesting Approval for the Release draft and new Changelog file REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
   CHANGELOG_FILE: CHANGELOG.md # set to false (CHANGELOG_FILE: false) to disable CHANGELOG.md maintanance 
+  APP_SOURCE_JSON: app.json # name of your AltStore Source file (app.json) file set to false to disable automated maintanance of the file.
 
   ## Environment
   XCODE_VERSION: '14.2'
@@ -25,6 +29,12 @@ env:
   XCODE_BUILD_SDK: iphoneos
 
   # SHOULDNT CHANGE
+  XCODE_PRETEND_SCHEME: true
+  ICON_FILE_URL_PORTION: 'assets/images/icons'
+
+
+  # DONT CHANGE
+  GITHUB_REPO_URL: '${{ github.server_url }}/${{ github.repository }}'
  
   # For more configuration options see CONFIGURATION step
 
@@ -45,28 +55,39 @@ jobs:
         # SHOULD CHANGE
         echo "ORG_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
         echo "BUNDLE_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}" >> $GITHUB_ENV
+        echo "SOURCE_IDENTIFIER=org.${APP_NAME_BUNDLE_ID}.${{ env.XCODE_BUILD_SDK }}.${APP_NAME_BUNDLE_ID}.source" >> $GITHUB_ENV
 
         # MAY CHANGE
         RELEASE_VERSION=${GITHUB_REF#refs/*/}; 
         echo "MARKETING_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
+        echo "WEBSITE=${GITHUB_REPO_URL}" >> $GITHUB_ENV
+
         ## Build
         XCODE_NAME="${{ env.APP_NAME }}"
 
         
         # SHOULDNT CHANGE
         BUILD_FOLDER="./build"
-        XCODE_BUILD_ARCHIVE_PATH="${BUILD_FOLDER}/${{ env.APP_NAME }}.xcarchive"
         echo "XCODE_BUILD_SCHME=${XCODE_NAME}" >> $GITHUB_ENV
-        echo "ENTITLEMENTS_FILE=${XCODE_NAME}/${XCODE_NAME// /_}.entitlements" >> $GITHUB_ENV
+        XCODE_BUILD_ARCHIVE_PATH="${BUILD_FOLDER}/${{ env.APP_NAME }}.xcarchive"
+        echo "entitlements_file=${XCODE_NAME}/${XCODE_NAME// /_}.entitlements" >> $GITHUB_ENV
         RESULT_APP_FOLDER="${XCODE_BUILD_ARCHIVE_PATH}/Products/Applications/${{ env.APP_NAME }}.app"
         echo "RESULT_MACHO_BIN=${RESULT_APP_FOLDER}/${{ env.APP_NAME }}" >> $GITHUB_ENV
+        XCODE_PROJECT_FOLDER="${XCODE_NAME}.xcodeproj"
+        XCODE_USER_DATA_FOLDERS="${XCODE_PROJECT_FOLDER}/xcuserdata"
+        XCODE_X_USER_SCHEMEMGMNT_FILE_PORTION="xcschemes/xcschememanagement.plist"
+  
 
-        # DONT CHANGE (Exports ENV set above fot future steps)
+        # DONT CHANGE (Mainly exports ENV set above fot future steps)
+        echo "GITHUB_REPO_COMPARE_URL=${GITHUB_REPO_URL}/compare" >> $GITHUB_ENV
         echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
         echo "XCODE_NAME=${XCODE_NAME}" >> $GITHUB_ENV
         echo "XCODE_BUILD_ARCHIVE_PATH=${XCODE_BUILD_ARCHIVE_PATH}" >> $GITHUB_ENV
         echo "BUILD_FOLDER=${BUILD_FOLDER}" >> $GITHUB_ENV
         echo "RESULT_APP_FOLDER=${RESULT_APP_FOLDER}" >> $GITHUB_ENV
+        echo "XCODE_PROJECT_FOLDER=${XCODE_PROJECT_FOLDER}" >> $GITHUB_ENV
+        echo "XCODE_USER_DATA_FOLDERS=${XCODE_USER_DATA_FOLDERS}" >> $GITHUB_ENV
+        echo "XCODE_X_USER_SCHEMEMGMNT_FILE_PORTION=${XCODE_X_USER_SCHEMEMGMNT_FILE_PORTION}" >> $GITHUB_ENV
 
     - name: Test Version name is correct
       run: |
@@ -91,12 +112,92 @@ jobs:
         restore-keys: xcode-cache-deriveddata-${{ github.workflow }}-
 
 
+ # - name: Create Default xcscheme and changelog file if it doesnt exist
+ #   run: |
+ #     FALSE="false"
+ #     check_file_exists_test() #   if [ $FRAMEWORK_INSTALL = "$TRUE" ] && [ "$APPIUM_INSTALL" = "$TRUE" ] ; then #   if ! command -v python3.9 &> /dev/null # if ! [ $? = 0 ];then
+ #     {
+ #       test -f "$1"
+ #     }
+ #     if ! check_file_exists_test "$CHANGELOG_FILE" && [ "$CHANGELOG_FILE" != "$FALSE" ] ; then
+ #     echo <<EOFXXXXXXXXXXXX > "$CHANGELOG_FILE"
+ #     <?xml version="1.0" encoding="UTF-8"?>
+ #     <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ #     <plist version="1.0">
+ #     <dict>
+ #             <key>SchemeUserState</key>
+ #             <dict>
+ #                     <key>${XCODE_NAME}</key>
+ #                     <dict>
+ #                             <key>orderHint</key>
+ #                             <integer>0</integer>
+ #                     </dict>
+ #             </dict>
+ #     </dict>
+ #     </plist>
+ #     EOFXXXXXXXXXXXX
+ #     fi
+
+ #     if ! check_file_exists_test "$CHANGELOG_FILE" && [ "$CHANGELOG_FILE" != "$FALSE" ] ; then
+ #       echo <<EOFXXXXXXXXXXXX > "$CHANGELOG_FILE"
+ #       <?xml version="1.0" encoding="UTF-8"?>
+ #       <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+ #       <plist version="1.0">
+ #       <dict>
+ #               <key>SchemeUserState</key>
+ #               <dict>
+ #                       <key>${XCODE_NAME}</key>
+ #                       <dict>
+ #                               <key>orderHint</key>
+ #                               <integer>0</integer>
+ #                       </dict>
+ #               </dict>
+ #       </dict>
+ #       </plist>
+ #       EOFXXXXXXXXXXXX
+ #     fi
+
+
     - name: pretend xcscheme
+      # This step tries to workaround the issue thath by default not all Xcodeprojects have a build scheme which is required to build the App
+      # disable this step by setting XCODE_PRETEND_SCHEME to false
+      continue-on-error: true
       run: |
+        FALSE="false"
+        check_file_exists_test() 
+        {
+          test -f "$1"
+        }
         SYSTEM_USER=$(whoami)
-        echo "The system username of the runner is: $SYSTEM_USER"
-        mv  CVCalendar\ Demo.xcodeproj/xcuserdata/x.xcuserdatad  CVCalendar\ Demo.xcodeproj/xcuserdata/"$SYSTEM_USER".xcuserdatad
-        ls  CVCalendar\ Demo.xcodeproj/xcuserdata/
+        SYSTEM_USER_USER_SCHEMEMGMNT_FILE="${XCODE_USER_DATA_FOLDERS}/${SYSTEM_USER}.xcuserdatad/${XCODE_X_USER_SCHEMEMGMNT_FILE_PORTION}"
+        if ! check_file_exists_test "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE)" && [ "$XCODE_PRETEND_SCHEME" != "$FALSE" ] ; then
+
+          mkdir -p "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE)"
+          echo <<-EOFXXXXXXXXXXXX > "$SYSTEM_USER_USER_SCHEMEMGMNT_FILE"
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+                <key>SchemeUserState</key>
+                <dict>
+                        <key>${XCODE_NAME}</key>
+                        <dict>
+                                <key>orderHint</key>
+                                <integer>0</integer>
+                        </dict>
+                </dict>
+        </dict>
+        </plist>
+        EOFXXXXXXXXXXXX
+
+        else
+          if [ "$XCODE_PRETEND_SCHEME" != "$FALSE" ] ; then
+            echo "INFO  XCODE_PRETEND_SCHEME set to  ${XCODE_PRETEND_SCHEME}, pretend xcscheme abborted"
+          fi
+          echo "WARNING xcuserdatad folder for ${SYSTEM_USER} user already exists, pretend xcscheme abborted"
+          false
+        fi      
+
   #  - name: Build the App
   #    run: |
   #      xcodebuild MARKETING_VERSION=3 PRODUCT_BUNDLE_IDENTIFIER=test.ib PRODUCT_NAME="THX TaKa" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO  AD_HOC_CODE_SIGNING_ALLOWED=YES -scheme "CVCalendar Demo" -sdk iphoneos  -archivePath ./build/"THX TaKa" archive
@@ -118,18 +219,96 @@ jobs:
         AD_HOC_CODE_SIGNING_ALLOWED=YES \
         | xcpretty && exit ${PIPESTATUS[0]}
     
+    - name: Compile entitlements
+      run: |
+        pip install deepmerge 
+        cat <<EOFPYTHONSCRIPT > compile_entitlements.py
+        import plistlib
+        import os.path
+        import json
+        from deepmerge import always_merger
+        from enum import Enum
+        import argparse
+
+        parser = argparse.ArgumentParser(description='extract entitlements and writes them to output')
+        parser.add_argument("input_files", help="entitlements files to extract entitlements from "
+                                                """example '["filename1","filename2",{"filename2":"CodeEntitlements"}]""")
+        parser.add_argument("output_file", help="location for compiled entitlements")
+        parser.add_argument("altsource_output_file", help="location for compiled json list of required entitlements")
+        parser.add_argument('--skip-nonexisting-files', "-s", dest='skip_nonexisting_files', default=False, action="store_true",
+                            help='If a file in input_files is doesn\'t exist it is skipped')
+
+        args = parser.parse_args()
+
+
+        class Types(Enum):
+            PLIST = 1
+            CODE_ENTITLEMENTS = "CodeEntitlements"
+
+
+        input_files = eval(args.input_files)
+        entitlements_plist = None
+        for file in input_files:
+            if type(file) != str:
+                if type(file) == dict:
+                    file, file_type = file.popitem()
+                else:
+                    raise Exception("file list problem unsupported datatype in list: " + type(file))
+            else:
+                file_type = Types.PLIST
+
+            if (not os.path.isfile(file)) and args.skip_nonexisting_files:
+                print("WARNING file not found skipping: " + file)
+                continue
+
+            f = open(file, 'rb')
+            data = f.read()
+            f.close()
+            if file_type == Types.CODE_ENTITLEMENTS.value:
+                xml_start = data.find(b'<?xml')
+                data = data[xml_start:]
+            elif file_type is not Types.PLIST:
+                raise Exception("file list problem unsupported filetype: " + file_type)
+            plist = plistlib.loads(data)
+            if not (entitlements_plist == plist):
+                if entitlements_plist is not None:
+                    print("WARNING not all files match: trying to merge entitlements")
+                    always_merger.merge(entitlements_plist, plist)
+                else:
+                    print("seems like first round setting permissions")
+                    entitlements_plist = plist
+
+        f = open(args.output_file, 'wb')
+        plistlib.dump(entitlements_plist, f)
+        f.close()
+
+        f = open(args.altsource_output_file, 'w')
+        json.dump(list(entitlements_plist.keys()), f)
+        f.close()
+        EOFPYTHONSCRIPT
+        python compile_entitlements.py \
+        "['${RESULT_APP_FOLDER}/archived-expanded-entitlements.xcent', \
+          '${entitlements_file}', \
+          {'${RESULT_APP_FOLDER}/_CodeSignature/CodeEntitlements':'CodeEntitlements'}]" \
+        "${BUILD_FOLDER}/compiled_entitlements.plist" \
+        "${BUILD_FOLDER}/entitlements_list.json"
+
+
+        # echo "entitlements_file=${BUILD_FOLDER}/compiled_entitlements.plist" >> $GITHUB_ENV
+
+      
     - name: Add entitlements to signature
       # if: ${{ env.ADD_ENTITLEMENTS }}
       continue-on-error: true
       run: |
         brew install ldid 
-        echo 'running ldid with: "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}"'
-        if [ ldid "-S${{ env.ENTITLEMENTS_FILE }}"  "${{ env.RESULT_MACHO_BIN }}" ]
+        echo 'running ldid with: "-S${{ env.entitlements_file }}"  "${{ env.RESULT_MACHO_BIN }}"'
+        if [ ldid "-S${{ env.entitlements_file }}"  "${{ env.RESULT_MACHO_BIN }}" ]
         then
           echo "worked"
         else
-          echo "WARNING ${{ env.ENTITLEMENTS_FILE }} or ${{ env.RESULT_MACHO_BIN }} couldnt be found failed to add signature"
-          echo "check  ${{ env.ENTITLEMENTS_FILE }}"; ls  "${{ env.ENTITLEMENTS_FILE }}" || true
+          echo "WARNING ${{ env.entitlements_file }} or ${{ env.RESULT_MACHO_BIN }} couldnt be found failed to add signature"
+          echo "check  ${{ env.entitlements_file }}"; ls  "${{ env.entitlements_file }}" || true
           echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}" || true
           false
         fi
@@ -138,9 +317,11 @@ jobs:
       run: |
         mkdir "${{ env.BUILD_FOLDER }}/Payload"
         cp -pR "${{ env.RESULT_APP_FOLDER }}" "${{ env.BUILD_FOLDER }}/Payload/"
-        IPA_PATH="${{ env.BUILD_FOLDER }}/${APP_NAME// /-}.ipa"
+        IPA_FILE_NAME="${APP_NAME// /-}.ipa"
+        IPA_PATH="${{ env.BUILD_FOLDER }}/${IPA_FILE_NAME}"
         echo "IPA_PATH=${IPA_PATH}" >> $GITHUB_ENV
         (cd ${{ env.BUILD_FOLDER }} && zip -r  -  "Payload") > "${IPA_PATH}"
+        echo "IPA_FILE_NAME=${IPA_FILE_NAME}" >> $GITHUB_ENV
 
 
     - name: Build Changelog on PRs 
@@ -176,12 +357,12 @@ jobs:
         echo "CHANGELOG_PREPEND<<EOF" >> $GITHUB_ENV;echo "$CHANGELOG_PREPEND" >> $GITHUB_ENV; echo "EOF" >> $GITHUB_ENV
 
 
-        FULL_CHANGELOG_LINK="${{ github.server_url }}/${{ github.repository }}/compare/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}"
+        FULL_CHANGELOG_LINK="${GITHUB_REPO_COMPARE_URL}/${{ steps.build_changelog_on_prs.outputs.fromTag }}...${{ env.RELEASE_VERSION }}"
         echo "your full link is ${FULL_CHANGELOG_LINK}"
         echo "FULL_CHANGELOG_LINK=${FULL_CHANGELOG_LINK}" >> $GITHUB_ENV
         echo "step finished"
-    
-    - name: Compile Release Notes
+
+    - name: Compile Release Notes from Changelog-Prependix
       run: | 
         RELEASE_NOTES=$(cat <<EOFXXXXXXXXXXXX
         ${CHANGELOG_PREPEND}
@@ -191,7 +372,7 @@ jobs:
         Built at (UTC): `${{ steps.date.outputs.date }}`
         Commit SHA: `${{ github.sha }}`
         Version: `${{ env.RELEASE_VERSION }}`
-        Github action run:  `${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}`
+        Github action run:  `${GITHUB_REPO_URL}/actions/runs/${{ github.run_id }}`
         SHA256 hash: `${{ hashFiles(env.IPA_PATH) }}`
         **Full Changelog**: ${FULL_CHANGELOG_LINK}
         EOFXXXXXXXXXXXX
@@ -201,8 +382,41 @@ jobs:
         #echo "RELEASE_NOTES=${RELEASE_NOTES}" >> $GITHUB_ENV
         echo "RELEASE_NOTES<<EOF" >> $GITHUB_ENV;echo "$RELEASE_NOTES" >> $GITHUB_ENV; echo "EOF" >> $GITHUB_ENV
 
+    - name: Create changelog file if it doesnt exist
+      run: |
+        FALSE="false"
+        check_file_exists_test() #   if [ $FRAMEWORK_INSTALL = "$TRUE" ] && [ "$APPIUM_INSTALL" = "$TRUE" ] ; then #   if ! command -v python3.9 &> /dev/null # if ! [ $? = 0 ];then
+        {
+          test -f "$1"
+        }
+        if ! check_file_exists_test "$CHANGELOG_FILE" && [ "$CHANGELOG_FILE" != "$FALSE" ] ; then
+        echo <<EOFXXXXXXXXXXXX > "$CHANGELOG_FILE"
+        # [${{ steps.build_changelog_on_prs.outputs.fromTag }}]
+        EOFXXXXXXXXXXXX
+        fi
 
-
+    - name: Compile new Changelog file 
+      if: ${{ env.CHANGELOG_FILE != 'false' }}
+      run: |
+        # Compile the Text that will be prepended
+        CHANGELOG_PREPEND="${CHANGELOG_PREPEND}\n${FULL_CHANGELOG_LINK}"
+        # Prepend it 
+        NEW_CHANGELOG_FILE="# [RELEASE_VERSION] - ${{ steps.date.outputs.date }}\n\n${CHANGELOG_PREPEND}\n$(cat $CHANGELOG_FILE)"
+        # Compile text that will be inserted in the  Full Changelog Section
+        CHANGELOG_INSERT="${FULL_CHANGELOG_LINK//${RELEASE_VERSION}/HEAD}\n[${RELEASE_VERSION}]: ${FULL_CHANGELOG_LINK}"
+        # Insert it 
+        NEW_CHANGELOG_FILE=$(echo "$NEW_CHANGELOG_FILE" | awk -v new_line="$CHANGELOG_INSERT" '
+          BEGIN { FS=OFS="\n" }
+          /## Full Changelog diffs list/ {
+            print
+            getline
+            sub(/\[unreleased\]:.*/, "[unreleased]: " new_line)
+          }
+          { print }
+        ')
+        #echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
+        echo "NEW_CHANGELOG_FILE<<EOF" >> $GITHUB_ENV;echo "$NEW_CHANGELOG_FILE" >> $GITHUB_ENV; echo "EOF" >> $GITHUB_ENV   
+    
     - name: Upload to new stable release and create draft
       uses: softprops/action-gh-release@v2
       id: upload_and_draft
@@ -217,28 +431,7 @@ jobs:
         body: |
           ${{ env.RELEASE_NOTES }}
 
-    - name: Compile new Changelog file 
-      if: ${{ env.CHANGELOG_FILE != 'false' }}
-      run: |
-        # Compile the Text that will be prepended
-        CHANGELOG_PREPEND="${CHANGELOG_PREPEND}\n${FULL_CHANGELOG_LINK}"
-        # Prepend it 
-        NEW_CHANGELOG_FILE="${CHANGELOG_PREPEND}\n$(cat $CHANGELOG_FILE)"
-        # Compile text that will be inserted in the  Full Changelog Section
-        CHANGELOG_INSERT="${FULL_CHANGELOG_LINK//${RELEASE_VERSION}/HEAD}\n[${RELEASE_VERSION}]: ${FULL_CHANGELOG_LINK}"
-        # Insert it 
-        NEW_CHANGELOG_FILE=$(echo "$NEW_CHANGELOG_FILE" | awk -v new_line="$CHANGELOG_INSERT" '
-          BEGIN { FS=OFS="\n" }
-          /## Full Changelog diffs list/ {
-            print
-            getline
-            sub(/\[unreleased\]:.*/, "[unreleased]: " new_line)
-          }
-          { print }
-        ')
-        #echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
-        echo "NEW_CHANGELOG_FILE<<EOF" >> $GITHUB_ENV;echo "$NEW_CHANGELOG_FILE" >> $GITHUB_ENV; echo "EOF" >> $GITHUB_ENV
-    
+
     - name: upload new Changelog File to linkode
       if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' && env.CHANGELOG_FILE != 'false' }}
       run: |
@@ -252,8 +445,278 @@ jobs:
         LINKNODE_URL="https://linkode.org/#${LINKODE_ID}"
         echo "LINKNODE_URL=${LINKNODE_URL}" >> $GITHUB_ENV 
 
+    - name: Setup Pages
+      id: pages_setup
+      uses: actions/configure-pages@v5
+    
+    - name: Update envs
+    # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
+      run: |
+        echo "ICON_URL=${{ steps.pages_setup.outputs.page_url }}/${ICON_FILE_URL_PORTION}/AppIcon.png" >> $GITHUB_ENV
+
+    - name: Update/Create altsource json
+    # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
+      run: |
+        pip install deepmerge 
+        cat <<EOFPYTHONSCRIPT > update_altsource_json.py
+        import plistlib
+        import json
+        import argparse
+        import os
+        import os.path
+        
+        
+        parser = argparse.ArgumentParser(description='Updates a given altsource json (or creates a new one)')
+        parser.add_argument("altsource_input_file", help="location for altsource  json ")
+        parser.add_argument("entitlements_file", help="location for compiled json list of required entitlements")
+        parser.add_argument("bundle_id", help="Bundle ID of the app ") # TODO optional
+        parser.add_argument("app_version", help="Version of the App")
+        parser.add_argument("build_date", help="Time and day the app was build")
+        parser.add_argument("info_plist_path", help="Path to the build Info.plist")  # TODO optional
+        parser.add_argument("result_app_folder", help="Path to the resulting App")
+        parser.add_argument("ipa_url", help="url of your new IPA")
+        parser.add_argument("ipa_path", help="path to your new IPA")
+        parser.add_argument("changelog", help="Changelog for this update")
+        
+        parser.add_argument('--stable', '-s' ,  dest="stable", nargs='?', action="store", default=None ,  const=True,
+                            help="Set this flag to mark the application as a stable and not beta version, you may pass 'true' ")
+        parser.add_argument('--create-default', "-c", dest='create_default', default=False, action="store_true",
+                            help='Wether or not to create a default altsource json if the given one is not found '
+                                 'you need to pass --app-name and --icon-url ')
+        parser.add_argument('--create-app', "-a", dest='create_app', default=False, action="store_true",
+                            help='Wether or not to add a new app if the given is not found '
+                                 'you need to pass --app-name and --icon-url')
+        
+        parser.add_argument("--app-name", '-n',dest='app_name', help="Name of the App") # OPTIONAL, REQUIRED BY  # TODO optional
+        parser.add_argument("--icon-url",'-i', dest='icon_url',help="Url to the Icon of your App")
+        parser.add_argument("--website",'-w', dest='website',help="Website of your source")
+        parser.add_argument("--source-identifier",'-s', dest='source_identifier',help="identifier of your source")
+        args = parser.parse_args()
+        
+        if (args.create_app or args.create_default) and not (args.app_name and args.icon_url):
+            raise Exception("you need to pass- -app-name and --icon-url when using args.create_app or args.create_default " )
+        #    for argument in [args.app_name, args.icon_url]:
+        #        if not argument:
+        #            raise Exception("you need to pass")
+        
+        if isinstance(args.stable, bool):
+            IS_BETA=args.stable
+        else:
+            if args.stable == "true":
+                IS_BETA = False
+            else:
+                IS_BETA = True
+        
+        
+        def read_json(file_path):
+            with open(file_path, 'r') as f:
+                return json.load(f)
+        
+        
+        def write_json(file_path, json_contents: dict):
+            with open(file_path, 'r') as f:
+                return json.dump(json_contents, f)
+        
+        
+        def create_app_default():
+            return {
+                "name": args.app_name,
+                "bundleIdentifier": args.bundle_id,
+                "developerName": "Project " + args.app_name,
+                "localizedDescription": "This is the awesome " + args.app_name + "\n",  # TODO consider Readme
+                "iconURL": args.icon_url,
+                "beta": IS_BETA,
+                "versions": [],
+                "appPermissions": {}
+            }
+        
+        
+        altsource_file = args.altsource_input_file
+        
+        if (not os.path.isfile(altsource_file)) and args.create_default:
+            # create boilerplate altsourcce
+            print("Warning creating minimum altsource json")
+            altsource = {
+                "name": "Project " + args.app_name + " Source",
+                "identifier": "",  # TODO required ?
+                "apps": [create_app_default()],
+                "news": []
+            }
+            app_index = 0
+        else:
+            # read altsource from disk
+            altsource = read_json(altsource_file)
+            app_index = 0
+            for app in altsource["apps"]:
+                if app["bundleIdentifier"] == args.bundle_id:
+                    break
+                else:
+                    app_index += 1
+                    if args.stable:
+                        print("Updating beta status")
+                        altsource["apps"][app_index]["beta"] = IS_BETA
+                    if args.icon_url:
+                        print("Updating icon url")
+                        altsource["apps"][app_index]["iconURL"] = args.icon_url
+                    if args.icon_url:
+                        print("Updating app name")
+                        altsource["apps"][app_index]["name"] = args.app_name
+        
+            else:
+                if args.create_app:
+                    altsource["apps"].append(create_app_default())
+                else:
+                    raise Exception("App not in provided altsource json and --create-app was not given")
+        
+        
+        if args.website:
+            print("Updating website")
+            altsource["website"] = args.website
+        
+        if args.source_identifier:
+            print("Updating source identifier")
+            altsource["identifier"] = args.source_identifier
+        
+        entitlements_list = read_json(args.entitlements_file)
+        
+        f = open(args.info_plist_path, 'rb')
+        plist = plistlib.load(f)
+        f.close()
+        usage_descriptions = {k: v for k, v in plist.items() if "UsageDescription" in k}
+        
+        new_permissions = {
+            "entitlements": entitlements_list,
+            "privacy": usage_descriptions,
+        }
+        
+        new_version = {
+            "version": args.app_version,
+            "date": args.build_date,
+            "size": os.stat(args.ipa_file).st_size,
+            "downloadURL": args.ipa_url,
+            "localizedDescription": "New features and bug fixes.",  # CONSIDER Changelog
+            "appPermissions": new_permissions,
+            # Adding in anticipation that everyone else at some point also figures out that permissions might change over time
+        }
+        
+        altsource["apps"][app_index]["versions"].insert(0, new_version)
+        altsource["apps"][app_index]["appPermissions"] = new_permissions
+        
+        
+        base_path= args.result_app_folder
+        priority_list = ["~ipad",""]
+        priority_list2= ["@3x~ipad","@3x","@2x~ipad","@2x", "~ipad", ""]
+        SUFFIX = ".png"
+        bad_endings= {"NotificationIcon"}
+        
+        def file_finder(file:str ,base_path=base_path):
+            for bad_ending in bad_endings:
+                if file.endswith(bad_ending):
+                    return False
+            for prio in priority_list2:
+                file_this_iteration = base_path+"/"+file+prio+SUFFIX
+                print("looking for file: " + file_this_iteration)
+                if os.path.isfile(file_this_iteration):
+                    return file_this_iteration
+            else:
+                    return False
+        
+        def search_icon(input_plist):
+            for property in input_plist:
+                for prio in priority_list:
+                    if property == "CFBundleIconFile" + prio:
+                        print("found CFBundleIconFile")
+                        icon_file = input_plist[property]
+                        icon_file = file_finder(file=icon_file)
+                        if icon_file:
+                            return icon_file
+                    if property == "CFBundleIconFiles" + prio:
+                        print("found CFBundleIconFiles")
+                        icon_file = input_plist[property][0]
+                        icon_file = file_finder(file=icon_file)
+                        if icon_file:
+                            return icon_file
+                    if property == "CFBundleIcons" + prio:
+                        print("found CFBundleIcons")
+                        cf_bundle_icons_node = input_plist[property]
+                        for bundle_icon_type in cf_bundle_icons_node:
+                            if bundle_icon_type == "CFBundlePrimaryIcon":
+                                print("found CFBundlePrimaryIcon")
+                                cf_bundle_primary_icon_node = cf_bundle_icons_node[bundle_icon_type]
+                                for property in cf_bundle_primary_icon_node:
+                                    if property == "CFBundleIconFiles":
+                                        print("found CFBundleIconFiles in CFBundlePrimaryIcon")
+                                        for icon_file in sorted(cf_bundle_primary_icon_node["CFBundleIconFiles"],reverse=True):
+                                            print("here")
+                                            icon_file=file_finder(file=icon_file)
+                                            if icon_file:
+                                                return icon_file
+                            if bundle_icon_type == "CFBundleAlternateIcons":
+                                print("found CFBundleAlternateIcons")
+                                cf_bundle_alternate_icons = cf_bundle_icons_node[bundle_icon_type]
+                                for alternate_icon in cf_bundle_alternate_icons:
+                                    print("found CFBundleIconFiles in CFBundleAlternateIcons")
+                                    cf_bundle_icon_files = cf_bundle_alternate_icons[alternate_icon].get("CFBundleIconFiles")
+                                    if cf_bundle_icon_files:
+                                        icon_file = file_finder(file=cf_bundle_icon_files[0])
+                                        if icon_file:
+                                            return icon_file
+            else:
+                return False
+        
+        
+        write_json(altsource_file, altsource)
+        
+        app_icon = search_icon(plist)
+        
+        if app_icon:
+            os.environ["APP_ICON_PATH"] = app_icon
+        else:
+            raise Exception("No Icon found")
+            
+
+        EOFPYTHONSCRIPT
 
 
+        pyhton update_altsource_json.py \
+        "${APP_SOURCE_JSON}" \
+        "${BUILD_FOLDER}/entitlements_list.json" \
+        "${BUNDLE_IDENTIFIER}" \
+        "${RELEASE_VERSION}" \
+        "${{ steps.date.outputs.date }}" \
+        "${RESULT_APP_FOLDER}/Info.plist" \
+        "${RESULT_APP_FOLDER}" \
+        "${GITHUB_REPO_URL}/releases/download/${RELEASE_VERSION}/${IPA_FILE_NAME}" \
+        "${IPA_PATH}" \
+        "Big News" \
+        --stable ${PRODUCTION_RELEASE} \
+        --create-default \
+        --create-app \
+        --website "${WEBSITE}" \
+        --app-name "${APP_NAME}" \
+        --icon-url "${ICON_URL}"
+
+        echo "APP_ICON_PATH=${APP_ICON_PATH}" >> $GITHUB_ENV
+
+        # --source-identifier $SOURCE_IDENTIFIER"
+
+    - name: Prepare Source Website
+    # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
+      run: |
+        WEBDITE_BUILD_DIR="websitebuild"
+        mkidir "$WEBDITE_BUILD_DIR"
+        cp "$APP_ICON_PATH" "${WEBDITE_BUILD_DIR}/${ICON_FILE_URL_PORTION}/AppIcon.png"
+        cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/index.html"
+        cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/altsource.json"
+        cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/sidesource.json"
+        cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/${APP_SOURCE_JSON}"
+        echo "WEBDITE_BUILD_DIR=${WEBDITE_BUILD_DIR}" >> $GITHUB_ENV
+
+    - name: Upload source and icon to Source Website
+      uses: actions/upload-pages-artifact@v1
+      with:
+        # location of the coverage artifacts
+        path: "./${WEBDITE_BUILD_DIR}"
 
     - uses: powerdot/telegram-manual-approval@main
       timeout-minutes: 480
@@ -294,28 +757,55 @@ jobs:
         #echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
         echo "NEW_CHANGELOG_FILE<<EOF" >> $GITHUB_ENV;echo "$NEW_CHANGELOG_FILE" >> $GITHUB_ENV; echo "EOF" >> $GITHUB_ENV
 
+    
+
     - uses: eregon/publish-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         release_id: ${{ steps.upload_and_draft.outputs.id }}
     
-    - name: Update Changelog
-      if: ${{ env.CHANGELOG_FILE != 'false' }}
-      run: |
-        git pull
-        echo "${NEW_CHANGELOG_FILE}" >> "${CHANGELOG_FILE}"
-        git add "${CHANGELOG_FILE}" 
-        git commit -m "updated ${CHANGELOG_FILE}" 
-        git push
+
+  deploy:
+    # Add a dependency to the build job
+    needs: build-and-deploy
+
+    # Grant GITHUB_TOKEN the permissions required to make a Pages deployment
+    permissions:
+      pages: write      # to deploy to Pages
+      id-token: write   # to verify the deployment originates from an appropriate source
+
+    # Deploy to the github-pages environment
+    environment:
+      name: github-pages
+      url: ${{ steps.pages_setup.outputs.page_url }}
+
+    # Specify runner + deployment step
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
 
 
-
-
-
+#  - name: Update Changelog
+#    if: ${{ env.CHANGELOG_FILE != 'false' }}
+#    run: |
+#      git pull
+#      echo "${NEW_CHANGELOG_FILE}" >> "${CHANGELOG_FILE}"
+#      git add "${CHANGELOG_FILE}" 
+#      git commit -m "updated ${CHANGELOG_FILE}" 
+#      git push
+#
+#
+#
 
 
     
+
+
+
+
 
 
  #   - uses: khasanovbi/telegram-manual-approval@v0.0.2
