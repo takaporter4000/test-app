@@ -720,8 +720,6 @@ jobs:
           echo "APP_ICON_PATH=${APP_ICON_PATH}" >> $GITHUB_ENV
         fi
 
-        # -
-
     - name: Prepare Source Website
     # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
       run: |
