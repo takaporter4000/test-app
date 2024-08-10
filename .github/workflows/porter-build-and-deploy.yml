@@ -161,17 +161,16 @@ jobs:
     - name: pretend xcscheme
       # This step tries to workaround the issue thath by default not all Xcodeprojects have a build scheme which is required to build the App
       # disable this step by setting XCODE_PRETEND_SCHEME to false
-      continue-on-error: false
+      # continue-on-error: true
       run: |
         FALSE="false"
-        check_file_exists_test() 
+        check_dict_exists_test()
         {
-          test -f "$1"
+          test -d "$1"
         }
         SYSTEM_USER=$(whoami)
         SYSTEM_USER_USER_SCHEMEMGMNT_FILE="${XCODE_USER_DATA_FOLDERS}/${SYSTEM_USER}.xcuserdatad/${XCODE_X_USER_SCHEMEMGMNT_FILE_PORTION}"
-        if ! check_file_exists_test "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE})" && [ "$XCODE_PRETEND_SCHEME" != "$FALSE" ] ; then
-
+        if ! check_dict_exists_test "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE})" && [ "$XCODE_PRETEND_SCHEME" != "$FALSE" ] ; then
           mkdir -p "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE})"
           echo <<-EOFXXXXXXXXXXXX > "$SYSTEM_USER_USER_SCHEMEMGMNT_FILE"
         <?xml version="1.0" encoding="UTF-8"?>
