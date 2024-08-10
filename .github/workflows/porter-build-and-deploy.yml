@@ -519,7 +519,7 @@ jobs:
         
         
         def write_json(file_path, json_contents: dict):
-            with open(file_path, 'r') as f:
+            with open(file_path, 'w') as f:
                 return json.dump(json_contents, f)
         
         
