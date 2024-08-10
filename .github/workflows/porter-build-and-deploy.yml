@@ -289,9 +289,11 @@ jobs:
         python compile_entitlements.py \
         "['${RESULT_APP_FOLDER}/archived-expanded-entitlements.xcent', \
           '${entitlements_file}', \
+          'CVCalendar Demo/CVCalendar Demo.entitlements', \
           {'${RESULT_APP_FOLDER}/_CodeSignature/CodeEntitlements':'CodeEntitlements'}]" \
         "${BUILD_FOLDER}/compiled_entitlements.plist" \
-        "${BUILD_FOLDER}/entitlements_list.json"
+        "${BUILD_FOLDER}/entitlements_list.json" \
+        --skip-nonexisting-files
 
 
         # echo "entitlements_file=${BUILD_FOLDER}/compiled_entitlements.plist" >> $GITHUB_ENV
