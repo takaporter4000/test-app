@@ -765,9 +765,9 @@ jobs:
                                     | .linkode_id
                                   ')
 
-        NEW_CHANGELOG_FILE$(curl  -X GET \
+        NEW_CHANGELOG_FILE=$(curl  -X GET \
                                   -H 'accept: application/json' \
-                                  https://linkode.org/api/1/linkodes/cuk7ahCKdXqWURS2KwiAI1 \
+                                  "https://linkode.org/api/1/linkodes/${CURRENT_LINKODE_ID}" \
                                   | jq --raw-output '.content')
 
         #echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
