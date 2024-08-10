@@ -161,7 +161,7 @@ jobs:
     - name: pretend xcscheme
       # This step tries to workaround the issue thath by default not all Xcodeprojects have a build scheme which is required to build the App
       # disable this step by setting XCODE_PRETEND_SCHEME to false
-      continue-on-error: true
+      continue-on-error: false
       run: |
         FALSE="false"
         check_file_exists_test() 
@@ -188,6 +188,7 @@ jobs:
                 </dict>
         </dict>
         </plist>
+
         EOFXXXXXXXXXXXX
 
         else
@@ -680,7 +681,7 @@ jobs:
         EOFPYTHONSCRIPT
 
 
-        pyhton update_altsource_json.py \
+        python update_altsource_json.py \
         "${APP_SOURCE_JSON}" \
         "${BUILD_FOLDER}/entitlements_list.json" \
         "${BUNDLE_IDENTIFIER}" \
