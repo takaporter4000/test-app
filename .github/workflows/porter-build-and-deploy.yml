@@ -173,7 +173,7 @@ jobs:
         export SYSTEM_USER_USER_SCHEMEMGMNT_FILE
         if ! check_dict_exists_test "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE})" && [ "$XCODE_PRETEND_SCHEME" != "$FALSE" ] ; then
           mkdir -p "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE})"
-          echo <<-EOFXXXXXXXXXXXX > "$SYSTEM_USER_USER_SCHEMEMGMNT_FILE"
+          cat <<-EOFXXXXXXXXXXXX > "$SYSTEM_USER_USER_SCHEMEMGMNT_FILE"
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
         <plist version="1.0">
