@@ -172,7 +172,7 @@ jobs:
         SYSTEM_USER_USER_SCHEMEMGMNT_FILE="${XCODE_USER_DATA_FOLDERS}/${SYSTEM_USER}.xcuserdatad/${XCODE_X_USER_SCHEMEMGMNT_FILE_PORTION}"
         if ! check_file_exists_test "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE)" && [ "$XCODE_PRETEND_SCHEME" != "$FALSE" ] ; then
 
-          mkdir -p "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE)"
+          mkdir -p "$(dirname ${SYSTEM_USER_USER_SCHEMEMGMNT_FILE})"
           echo <<-EOFXXXXXXXXXXXX > "$SYSTEM_USER_USER_SCHEMEMGMNT_FILE"
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
