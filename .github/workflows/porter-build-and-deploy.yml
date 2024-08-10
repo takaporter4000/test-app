@@ -457,7 +457,7 @@ jobs:
     - name: Update envs
     # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
       run: |
-        echo "ICON_URL=${{ steps.pages_setup.outputs.page_url }}/${ICON_FILE_URL_PORTION}/AppIcon.png" >> $GITHUB_ENV
+        echo "ICON_URL=${{ steps.pages_setup.outputs.base_url }}/${ICON_FILE_URL_PORTION}/AppIcon.png" >> $GITHUB_ENV
 
     - name: Update/Create altsource json
     # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
