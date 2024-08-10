@@ -509,6 +509,8 @@ jobs:
                 IS_BETA = False
             else:
                 IS_BETA = True
+
+        IPA_FILE_PATH = args.ipa_path
         
         
         def read_json(file_path):
@@ -595,7 +597,7 @@ jobs:
         new_version = {
             "version": args.app_version,
             "date": args.build_date,
-            "size": os.stat(args.ipa_file).st_size,
+            "size": os.stat(IPA_FILE_PATH).st_size,
             "downloadURL": args.ipa_url,
             "localizedDescription": "New features and bug fixes.",  # CONSIDER Changelog
             "appPermissions": new_permissions,
