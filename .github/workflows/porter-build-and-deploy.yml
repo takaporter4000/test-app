@@ -714,7 +714,7 @@ jobs:
     # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
       run: |
         WEBDITE_BUILD_DIR="websitebuild"
-        mkidir "$WEBDITE_BUILD_DIR"
+        mkdir "$WEBDITE_BUILD_DIR"
         cp "$APP_ICON_PATH" "${WEBDITE_BUILD_DIR}/${ICON_FILE_URL_PORTION}/AppIcon.png"
         cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/index.html"
         cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/altsource.json"
