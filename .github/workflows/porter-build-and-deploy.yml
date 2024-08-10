@@ -22,6 +22,7 @@ env:
   REVIEW_BEFORE_RELEASE: true # Send a telegram Message requesting Approval for the Release draft and new Changelog file REVIEW_BEFORE_RELEASE: ${{ true }} if: always()
   CHANGELOG_FILE: CHANGELOG.md # set to false (CHANGELOG_FILE: false) to disable CHANGELOG.md maintanance 
   APP_SOURCE_JSON: app.json # name of your AltStore Source file (app.json) file set to false to disable automated maintanance of the file.
+  APP_ICON_PATH: 'CVCalendar Demo/Images.xcassets/AppIcon.appiconset/icon_512x512@2x.png'
 
   ## Environment
   XCODE_VERSION: '14.2'
@@ -706,7 +707,9 @@ jobs:
         --app-name "${APP_NAME}" \
         --icon-url "${ICON_URL}"
 
-        echo "APP_ICON_PATH=${APP_ICON_PATH}" >> $GITHUB_ENV
+        if [ "$APP_ICON_PATH" != "" ]; then
+          echo "APP_ICON_PATH=${APP_ICON_PATH}" >> $GITHUB_ENV
+        fi
 
         # --source-identifier $SOURCE_IDENTIFIER"
 
