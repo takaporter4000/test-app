@@ -345,7 +345,11 @@ jobs:
 
     - name: Get current date
       id: date
-      run: echo "date=$(date -u +'%Y-%m-%d %c')" >> $GITHUB_OUTPUT    
+      run: echo "date=$(date -u +'%Y-%m-%d %c')" >> $GITHUB_OUTPUT   
+
+    - name: Get current date in AltStore date form
+      id: date_altstore
+      run: echo "date=$(date -u +'%Y-%m-%d')" >> $GITHUB_OUTPUT 
 
     - name: Compile Changelog-Prependix and full link
       run: | 
@@ -547,7 +551,7 @@ jobs:
             print("Warning creating minimum altsource json")
             altsource = {
                 "name": "Project " + args.app_name + " Source",
-                "identifier": "",  # TODO required ?
+               # "identifier": "",  # TODO required ?
                 "apps": [create_app_default()],
                 "news": []
             }
@@ -695,7 +699,7 @@ jobs:
         "${BUILD_FOLDER}/entitlements_list.json" \
         "${BUNDLE_IDENTIFIER}" \
         "${RELEASE_VERSION}" \
-        "${{ steps.date.outputs.date }}" \
+        "${{ steps.date_altstore.outputs.date }}" \
         "${RESULT_APP_FOLDER}/Info.plist" \
         "${RESULT_APP_FOLDER}" \
         "${GITHUB_REPO_URL}/releases/download/${RELEASE_VERSION}/${IPA_FILE_NAME}" \
