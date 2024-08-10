@@ -522,6 +522,7 @@ jobs:
                 IS_BETA = True
 
         IPA_FILE_PATH = args.ipa_path
+        RELEASE_NOTES = args.changelog
         
         
         def read_json(file_path):
@@ -605,10 +606,11 @@ jobs:
             "privacy": usage_descriptions,
         }
         
+        IPA_FILE_SIZE= os.stat(IPA_FILE_PATH).st_size
         new_version = {
             "version": args.app_version,
             "date": args.build_date,
-            "size": os.stat(IPA_FILE_PATH).st_size,
+            "size": IPA_FILE_SIZE,
             "downloadURL": args.ipa_url,
             "localizedDescription": "New features and bug fixes.",  # CONSIDER Changelog
             "appPermissions": new_permissions,
@@ -617,6 +619,12 @@ jobs:
         
         altsource["apps"][app_index]["versions"].insert(0, new_version)
         altsource["apps"][app_index]["appPermissions"] = new_permissions
+
+
+
+        #DEPRECATED BUT APPARENTLY STILL REQUIRED API
+        for key, value in {"version":args.app_version, "versionDate": args.build_date , "versionDescription":RELEASE_NOTES, "downloadURL":args.ipa_url, "size":IPA_FILE_SIZE}.items() :
+          altsource["apps"][app_index][key] = value
         
         
         base_path= args.result_app_folder
@@ -730,7 +738,8 @@ jobs:
         cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/index.html"
         cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/altsource.json"
         cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/sidesource.json"
-        cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/terra.json"
+        cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/perser.json"
+        cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/${RELEASE_VERSION}.json"
         echo "copy ${APP_SOURCE_JSON}"
         cp "$APP_SOURCE_JSON" "${WEBDITE_BUILD_DIR}/${APP_SOURCE_JSON}"
         echo "WEBDITE_BUILD_DIR=${WEBDITE_BUILD_DIR}" >> $GITHUB_ENV
