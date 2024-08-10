@@ -494,6 +494,8 @@ jobs:
         parser.add_argument("--icon-url",'-i', dest='icon_url',help="Url to the Icon of your App")
         parser.add_argument("--website",'-w', dest='website',help="Website of your source")
         parser.add_argument("--source-identifier",'-S', dest='source_identifier',help="identifier of your source")
+        parser.add_argument('--search-icon', "-I", dest='search_icon', default=False, action="store_true",
+                            help='wether or not to search for an icon file in the info plist')
         args = parser.parse_args()
         
         if (args.create_app or args.create_default) and not (args.app_name and args.icon_url):
@@ -671,13 +673,16 @@ jobs:
         
         
         write_json(altsource_file, altsource)
-        
-        app_icon = search_icon(plist)
-        
-        if app_icon:
-            os.environ["APP_ICON_PATH"] = app_icon
+
+        if args.search_icon:
+          app_icon = search_icon(plist)
+
+          if app_icon:
+              os.environ["APP_ICON_PATH"] = app_icon
+          else:
+              raise Exception("No Icon found, an icon is required for the altsource json")
         else:
-            raise Exception("No Icon found")
+          print("WARNING NO ICON")
             
 
         EOFPYTHONSCRIPT
