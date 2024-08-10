@@ -732,7 +732,7 @@ jobs:
       uses: actions/upload-pages-artifact@v1
       with:
         # location of the coverage artifacts
-        path: "./${WEBDITE_BUILD_DIR}"
+        path: "./${{ env.WEBDITE_BUILD_DIR }}"
 
     - uses: powerdot/telegram-manual-approval@main
       timeout-minutes: 480
