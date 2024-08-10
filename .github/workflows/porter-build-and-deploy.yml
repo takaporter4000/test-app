@@ -710,13 +710,14 @@ jobs:
         --create-app \
         --website "${WEBSITE}" \
         --app-name "${APP_NAME}" \
-        --icon-url "${ICON_URL}"
+        --icon-url "${ICON_URL}" \
+        -source-identifier $SOURCE_IDENTIFIER"
 
         if [ "$APP_ICON_PATH" != "" ]; then
           echo "APP_ICON_PATH=${APP_ICON_PATH}" >> $GITHUB_ENV
         fi
 
-        # --source-identifier $SOURCE_IDENTIFIER"
+        # -
 
     - name: Prepare Source Website
     # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
