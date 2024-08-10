@@ -680,7 +680,7 @@ jobs:
             else:
                 return False
         
-        
+        print("writing JSON: " + str(altsource))
         write_json(altsource_file, altsource)
 
         if args.search_icon:
