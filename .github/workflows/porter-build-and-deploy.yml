@@ -714,7 +714,7 @@ jobs:
         --website "${WEBSITE}" \
         --app-name "${APP_NAME}" \
         --icon-url "${ICON_URL}" \
-        -source-identifier $SOURCE_IDENTIFIER"
+        --source-identifier $"SOURCE_IDENTIFIER"
 
         if [ "$APP_ICON_PATH" != "" ]; then
           echo "APP_ICON_PATH=${APP_ICON_PATH}" >> $GITHUB_ENV
