@@ -729,7 +729,7 @@ jobs:
         echo "WEBDITE_BUILD_DIR=${WEBDITE_BUILD_DIR}" >> $GITHUB_ENV
 
     - name: Upload source and icon to Source Website
-      uses: actions/upload-pages-artifact@v4
+      uses: actions/upload-pages-artifact@v3
       with:
         # location of the coverage artifacts
         path: "./${{ env.WEBDITE_BUILD_DIR }}"
