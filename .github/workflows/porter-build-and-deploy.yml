@@ -161,7 +161,7 @@ jobs:
     - name: pretend xcscheme
       # This step tries to workaround the issue thath by default not all Xcodeprojects have a build scheme which is required to build the App
       # disable this step by setting XCODE_PRETEND_SCHEME to false
-      # continue-on-error: true
+      continue-on-error: true
       run: |
         FALSE="false"
         check_dict_exists_test()
@@ -493,7 +493,7 @@ jobs:
         parser.add_argument("--app-name", '-n',dest='app_name', help="Name of the App") # OPTIONAL, REQUIRED BY  # TODO optional
         parser.add_argument("--icon-url",'-i', dest='icon_url',help="Url to the Icon of your App")
         parser.add_argument("--website",'-w', dest='website',help="Website of your source")
-        parser.add_argument("--source-identifier",'-s', dest='source_identifier',help="identifier of your source")
+        parser.add_argument("--source-identifier",'-S', dest='source_identifier',help="identifier of your source")
         args = parser.parse_args()
         
         if (args.create_app or args.create_default) and not (args.app_name and args.icon_url):
