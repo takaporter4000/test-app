@@ -26,15 +26,21 @@ env:
   # name of your AltStore Source file (app.json) file set to false to disable automated maintanance of the file.
   APP_SOURCE_JSON: app.json
   APP_ICON_PATH: 'CVCalendar Demo/Images.xcassets/AppIcon.appiconset/icon_512x512@2x.png'
-
   ## Environment
   XCODE_VERSION: '14.2'
   #Build
   XCODE_BUILD_SDK: iphoneos
+  # Advanced
+  APP_SOURCE_DIFFERENT_REPO: true
+  APP_SOURCE_REPO_NAME: "test-app"
+  APP_SOURCE_REPO_OWNER: "takaporter4000"
+  APP_SOURCE_REPO_PAT: ${{ secrets.APP_SOURCE_REPO_PAT }}
 
   # SHOULDNT CHANGE
   XCODE_PRETEND_SCHEME: true
   ICON_FILE_URL_PORTION: 'assets/images/icons'
+
+  PAGES_ARTIFACT_NAME: "github-pages"
 
 
   # DONT CHANGE
@@ -753,9 +759,19 @@ jobs:
 
     - name: Upload source and icon to Source Website
       uses: actions/upload-pages-artifact@v3
+      id: pages_upload
       with:
         # location of the coverage artifacts
         path: "./${{ env.WEBDITE_BUILD_DIR }}"
+        name: ${{ env.PAGES_ARTIFACT_NAME }}
+    
+    - name: Update envs
+    # TODO CONSIDER TO MOVE AFTER REVIEW AFTER PULL CHANGELOG TO AUTOMATTICALLY INPUT CHANGELOG
+      run: |
+        echo "WEBSITE_ARTIFACT_ID=${{ steps.pages_upload.outputs.artifact_id }}" >> $GITHUB_ENV
+        echo "WEBSITE_ARTIFACT_NAME=${{ env.PAGES_ARTIFACT_NAME }}" >> $GITHUB_ENV      
+        echo "WEBSITE_ARTIFACT_WORKFLOW_RUN_ID=${{ github.run_id  }}" >> $GITHUB_ENV ${{ github.repository }}
+        echo "WEBSITE_ARTIFACT_REPO=${{ github.repository }}" >> $GITHUB_ENV
 
     - uses: powerdot/telegram-manual-approval@main
       timeout-minutes: 480
@@ -796,16 +812,30 @@ jobs:
         #echo "NEW_CHANGELOG_FILE=${NEW_CHANGELOG_FILE}" >> $GITHUB_ENV
         echo "NEW_CHANGELOG_FILE<<EOF" >> $GITHUB_ENV;echo "$NEW_CHANGELOG_FILE" >> $GITHUB_ENV; echo "EOF" >> $GITHUB_ENV
 
-    
-
     - uses: eregon/publish-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         release_id: ${{ steps.upload_and_draft.outputs.id }}
+
+    - name: trigger deployment in different repo
+      if: ${{ env.APP_SOURCE_DIFFERENT_REPO != 'false' }}
+      run: |
+        # Set the required variables
+        event_type="trigger-workflow" 
+        curl -L \
+          -X POST \
+          -H "Accept: application/vnd.github+json" \
+          -H "Authorization: Bearer ${APP_SOURCE_REPO_PAT}" \
+          -H "X-GitHub-Api-Version: 2022-11-28" \
+          https://api.github.com/repos/$APP_SOURCE_REPO_OWNER/$APP_SOURCE_REPO_NAME/dispatches \
+          -d "{\"event_type\": \"$event_type\", \"client_payload\": {\"website_artifact_name\": \"$WEBSITE_ARTIFACT_NAME\", \"website_artifact_workflow_run_id\": \"$WEBSITE_ARTIFACT_WORKFLOW_RUN_ID\", \"website_artifact_repo\": \"$WEBSITE_ARTIFACT_REPO\"}}"
+
+
     
 
   deploy:
+    if: ${{ env.APP_SOURCE_DIFFERENT_REPO == 'false' }}
     # Add a dependency to the build job
     needs: build-and-deploy
 
@@ -817,7 +847,7 @@ jobs:
     # Deploy to the github-pages environment
     environment:
       name: github-pages
-      url: "appsource.kbcloudio.de"
+      url: ${{ steps.pages_setup.outputs.page_url }}
 
     # Specify runner + deployment step
     runs-on: ubuntu-latest
@@ -825,6 +855,8 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4 # or specific "vX.X.X" version tag for this action
+
+
 
 
 #  - name: Update Changelog
