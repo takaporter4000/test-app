@@ -817,7 +817,7 @@ jobs:
     # Deploy to the github-pages environment
     environment:
       name: github-pages
-      url: ${{ steps.pages_setup.outputs.page_url }}
+      url: "appsource.kbcloudio.de"
 
     # Specify runner + deployment step
     runs-on: ubuntu-latest
