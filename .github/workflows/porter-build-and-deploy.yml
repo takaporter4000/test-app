@@ -326,6 +326,17 @@ jobs:
           echo "check  ${{ env.RESULT_MACHO_BIN }}"; ls "${{ env.RESULT_MACHO_BIN }}" || true
           false
         fi
+    
+    - name: debug artifact 
+      uses: actions/upload-artifact@v4
+      with:
+        # Name of the artifact to upload.
+        # Optional. Default is 'artifact'
+        name: build-trap-1
+
+        # A file, directory or wildcard pattern that describes what to upload
+        # Required.
+        path: ${{ env.BUILD_FOLDER }}
 
     - name: Convert to IPA    
       run: |
