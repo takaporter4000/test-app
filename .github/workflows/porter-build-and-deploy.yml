@@ -357,10 +357,10 @@ jobs:
     - name: Compile Changelog-Prependix and full link
       run: | 
         CHANGELOG_PREPEND="$(cat <<EOFXXXXXXXXXXXX
-        ## Changelog based on PRs 
+        # Changelog based on PRs 
         ${{ steps.build_changelog_on_prs.outputs.changelog }}
 
-        ## Changelog based on Commits
+        # Changelog based on Commits
         ${{ steps.build_changelog_on_commits.outputs.changelog }}
         EOFXXXXXXXXXXXX
         )"
@@ -379,13 +379,13 @@ jobs:
         RELEASE_NOTES=$(cat <<EOFXXXXXXXXXXXX
         ${CHANGELOG_PREPEND}
 
-        ## Build Info
+        # Build Info
         
-        Built at (UTC): `${{ steps.date.outputs.date }}`
-        Commit SHA: `${{ github.sha }}`
-        Version: `${{ env.RELEASE_VERSION }}`
-        Github action run:  `${GITHUB_REPO_URL}/actions/runs/${{ github.run_id }}`
-        SHA256 hash: `${{ hashFiles(env.IPA_PATH) }}`
+        Built at (UTC): \`${{ steps.date.outputs.date }}\`
+        Commit SHA: \`${{ github.sha }}\`
+        Version: \`${{ env.RELEASE_VERSION }}\`
+        Github action run: \`${GITHUB_REPO_URL}/actions/runs/${{ github.run_id }}\`
+        SHA256 hash: \`${{ hashFiles(env.IPA_PATH) }}\`
         **Full Changelog**: ${FULL_CHANGELOG_LINK}
         EOFXXXXXXXXXXXX
         )
@@ -411,9 +411,15 @@ jobs:
       if: ${{ env.CHANGELOG_FILE != 'false' }}
       run: |
         # Compile the Text that will be prepended
-        CHANGELOG_PREPEND="${CHANGELOG_PREPEND}\n${FULL_CHANGELOG_LINK}"
+        CHANGELOG_PREPEND="${CHANGELOG_PREPEND}
+        ${FULL_CHANGELOG_LINK}"
+
         # Prepend it 
-        NEW_CHANGELOG_FILE="# [RELEASE_VERSION] - ${{ steps.date.outputs.date }}\n\n${CHANGELOG_PREPEND}\n$(cat $CHANGELOG_FILE)"
+        NEW_CHANGELOG_FILE="# [RELEASE_VERSION] - ${{ steps.date.outputs.date }}
+        
+        ${CHANGELOG_PREPEND}
+        $(cat $CHANGELOG_FILE)"
+
         # Compile text that will be inserted in the  Full Changelog Section
         CHANGELOG_INSERT="${FULL_CHANGELOG_LINK//${RELEASE_VERSION}/HEAD}\n[${RELEASE_VERSION}]: ${FULL_CHANGELOG_LINK}"
         # Insert it 
@@ -539,6 +545,7 @@ jobs:
             return {
                 "name": args.app_name,
                 "bundleIdentifier": args.bundle_id,
+                "appID": args.bundle_id,
                 "developerName": "Project " + args.app_name,
                 "localizedDescription": "This is the awesome " + args.app_name + "\n",  # TODO consider Readme
                 "iconURL": args.icon_url,
@@ -750,7 +757,7 @@ jobs:
         # location of the coverage artifacts
         path: "./${{ env.WEBDITE_BUILD_DIR }}"
 
-    - uses: powerdot/telegram-manual-approval@main
+    - uses: powerdot/telegram-manual-approval@mainu
       timeout-minutes: 480
       if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
       with:

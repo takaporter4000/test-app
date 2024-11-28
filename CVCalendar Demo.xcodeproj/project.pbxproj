@@ -25,6 +25,7 @@
 
 /* Begin PBXFileReference section */
 		18E4B2C2202F6BDB00B61996 /* ColorsConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorsConfig.swift; sourceTree = "<group>"; };
+		22487FBA2C63C42E00714712 /* CVCalendar Demo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "CVCalendar Demo.entitlements"; sourceTree = "<group>"; };
 		55E122181A588CB60013B002 /* CVCalendar Demo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "CVCalendar Demo.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		55E1221C1A588CB60013B002 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		55E1221D1A588CB60013B002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -87,6 +88,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		22487FBB2C63C56200714712 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		55E1220F1A588CB60013B002 = {
 			isa = PBXGroup;
 			children = (
@@ -94,6 +102,7 @@
 				55E122301A588CB60013B002 /* CVCalendar DemoTests */,
 				55E122191A588CB60013B002 /* Products */,
 				564E03241D51DA100088B8D3 /* CVCalendar */,
+				22487FBB2C63C56200714712 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -109,6 +118,7 @@
 		55E1221A1A588CB60013B002 /* CVCalendar Demo */ = {
 			isa = PBXGroup;
 			children = (
+				22487FBA2C63C42E00714712 /* CVCalendar Demo.entitlements */,
 				55E1221D1A588CB60013B002 /* AppDelegate.swift */,
 				18E4B2C2202F6BDB00B61996 /* ColorsConfig.swift */,
 				55E1221F1A588CB60013B002 /* ViewController.swift */,
@@ -236,7 +246,20 @@
 				TargetAttributes = {
 					55E122171A588CB60013B002 = {
 						CreatedOnToolsVersion = 6.1.1;
+						DevelopmentTeam = AP862L65T6;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.ApplicationGroups.iOS = {
+								enabled = 0;
+							};
+							com.apple.InterAppAudio = {
+								enabled = 0;
+							};
+							com.apple.Siri = {
+								enabled = 1;
+							};
+						};
 					};
 					55E1222C1A588CB60013B002 = {
 						CreatedOnToolsVersion = 6.1.1;
@@ -419,10 +442,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "CVCalendar Demo/CVCalendar Demo.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "CVCalendar Demo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.gameapp.production.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.CVCalendarDemo.iphoneos.CVCalendarDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -432,10 +460,15 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "CVCalendar Demo/CVCalendar Demo.entitlements";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "CVCalendar Demo/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.gameapp.production.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = org.CVCalendarDemo.iphoneos.CVCalendarDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
