@@ -757,7 +757,7 @@ jobs:
         # location of the coverage artifacts
         path: "./${{ env.WEBDITE_BUILD_DIR }}"
 
-    - uses: powerdot/telegram-manual-approval@mainu
+    - uses: powerdot/telegram-manual-approval@main
       timeout-minutes: 480
       if: ${{ env.REVIEW_BEFORE_RELEASE == 'true' }}
       with:
